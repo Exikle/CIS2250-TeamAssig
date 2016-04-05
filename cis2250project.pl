@@ -69,19 +69,48 @@ sub startUserChoices {
     do{
         $validChoice = $TRUE;
 
-        #print menu here
+        printOptions();
 
         switch($choice){
             case 1 {
               print "One chosen" ;
             }
-          else {
-              $validChoice = $FALSE;
-              print "Invalid choice".$NEW_LINE;
-          }
+            case 2 {
+              print "Two chosen" ;
+            }
+            case 3 {
+              print "Three chosen" ;
+            }
+            case 4 {
+              print "Four chosen" ;
+            }
+            case 5 {
+              print "Five chosen" ;
+            }
+            case 6 {
+              print "Six chosen" ;
+            }
+            case 7 {
+              print "Etc chosen" ;
+            }
+            else {
+                $validChoice = $FALSE;
+                print "Invalid choice".$NEW_LINE;
+            }
 
         }
     }while($validChoice == $FALSE);
+}
+
+sub printOptions{
+    print "1. Option one".$NEW_LINE;
+    print "2. Option two".$NEW_LINE;
+    print "3. Option three".$NEW_LINE;
+    print "4. Option four".$NEW_LINE;
+    print "5. Option five".$NEW_LINE;
+    print "6. Option six".$NEW_LINE;
+    print "7. Etc"
+    return;
 }
 
 sub getYearRange{
