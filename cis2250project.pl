@@ -71,27 +71,30 @@ sub startUserChoices {
 
         printOptions();
 
+        print "Choice?: ";
+        $choice = <STDIN>;
+
         switch($choice){
             case 1 {
-              print "One chosen" ;
+              print "One chosen".$NEW_LINE;
             }
             case 2 {
-              print "Two chosen" ;
+              print "Two chosen".$NEW_LINE ;
             }
             case 3 {
-              print "Three chosen" ;
+              print "Three chosen".$NEW_LINE ;
             }
             case 4 {
-              print "Four chosen" ;
+              print "Four chosen".$NEW_LINE ;
             }
             case 5 {
-              print "Five chosen" ;
+              print "Five chosen".$NEW_LINE ;
             }
             case 6 {
-              print "Six chosen" ;
+              print "Six chosen".$NEW_LINE ;
             }
             case 7 {
-              print "Etc chosen" ;
+              print "Etc chosen".$NEW_LINE ;
             }
             else {
                 $validChoice = $FALSE;
@@ -109,7 +112,7 @@ sub printOptions{
     print "4. Option four".$NEW_LINE;
     print "5. Option five".$NEW_LINE;
     print "6. Option six".$NEW_LINE;
-    print "7. Etc"
+    print "7. Etc".$NEW_LINE;
     return;
 }
 
