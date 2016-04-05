@@ -6,8 +6,8 @@ use strict;
 use warnings;
 use version;   our $VERSION = qv('5.16.0');   # This is the version of Perl to be used
 use Text::CSV  1.32;   # We will be using the CSV module (version 1.32 or higher)
-                       # to parse each line
-
+# to parse each line
+use Switch;
 
 #
 #   cis2250project.pl
@@ -41,42 +41,73 @@ my $endingYear      = "";
 
 
 ############
-# Main
+# Running Program
 #
-
-
-clearScreen();
-getYearRange();
+main();
 
 
 ############
 # Subroutines
 #
 
+sub main{
+    clearScreen();
+    getYearRange();
+
+    clearScreen();
+    startUserChoices();
+
+    return;
+}
+
+sub startUserChoices {
+    my $choice = 1;
+    my $validChoice = $TRUE;
+
+
+
+    do{
+        $validChoice = $TRUE;
+
+        #print menu here
+
+        switch($choice){
+            case 1 {
+              print "One chosen" ;
+            }
+          else {
+              $validChoice = $FALSE;
+              print "Invalid choice".$NEW_LINE;
+          }
+
+        }
+    }while($validChoice == $FALSE);
+}
+
 sub getYearRange{
     my $continue = $FALSE;
     print "Choose the range of years you would like to examine (Min: 1994 - Max: 2014).\n";
 
     do {
-       print "Starting year:";
-       $startingYear = <STDIN>;
-       $continue = validateStartYear($startingYear);
+        print "Starting year:";
+        $startingYear = <STDIN>;
+        $continue = validateStartYear($startingYear);
 
-       if($continue == $FALSE){
-         print "Invalid start year. Must be in the range of 1994 to 2014.".$NEW_LINE;
-       }
+        if($continue == $FALSE){
+            print "Invalid start year. Must be in the range of 1994 to 2014.".$NEW_LINE;
+        }
 
     } while($continue == $FALSE);
     chomp $startingYear;
 
     do {
-       print "Ending year:";
-       $endingYear = <STDIN>;
-       $continue = validateEndYear($endingYear);
+        print "Ending year:";
+        $endingYear = <STDIN>;
+        $continue = validateEndYear($endingYear);
 
-       if($continue == $FALSE){
-         print "Invalid start year. Must be in the range of ".$startingYear." to 2014.".$NEW_LINE;
-       }
+        if($continue == $FALSE){
+            print "Invalid start year. Must be in the range of ".$startingYear." to 2014.".$NEW_LINE;
+        }
 
     } while($continue == $FALSE);
 
@@ -92,13 +123,13 @@ sub validateStartYear{
     else { return $FALSE; }
 
     if($year < 1994){
-       return $FALSE;
+        return $FALSE;
     }
     elsif($year > 2014){
-       return $FALSE;
+        return $FALSE;
     }
     else{
-       return $TRUE
+        return $TRUE
     }
 }
 
@@ -109,13 +140,13 @@ sub validateEndYear{
     else { return $FALSE; }
 
     if($year < $startingYear){
-       return $FALSE;
+        return $FALSE;
     }
     elsif($year > 2014){
-       return $FALSE;
+        return $FALSE;
     }  
     else{
-       return $TRUE
+        return $TRUE
     }
 }
 
