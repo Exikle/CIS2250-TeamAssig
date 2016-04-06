@@ -51,12 +51,27 @@ main();
 #
 
 sub main{
+    my $template;
+    my @years;
     clearScreen();
-    getYearRange();
-
+    @years = getYearRange();
     clearScreen();
-    startUserChoices();
-
+    $template = startUserChoices();
+    switch ($template)
+    {
+        case 1 {
+         valMaxMin(@years);
+        }
+        case 2 {
+         valComp(@years);
+        }
+        case 3 {
+         valGet(@years);
+        }
+        case 4 {
+         trend(@years);
+        }
+    }
     return;
 }
 
@@ -103,13 +118,14 @@ sub startUserChoices {
 
         }
     }while($validChoice == $FALSE);
+    return($choice);
 }
 
 sub printOptions{
-    print "1. Option one".$NEW_LINE;
-    print "2. Option two".$NEW_LINE;
-    print "3. Option three".$NEW_LINE;
-    print "4. Option four".$NEW_LINE;
+    print "1. Value Max/Min [Least/Most] [deaths or [field specific]] in [field specific] between [period]".$NEW_LINE;
+    print "2. Value Compare[field specific] or [field specific] has [least/most] in [field specific] in [period]".$NEW_LINE;
+    print "3. Value Get [field specific], happenec with [field specific] happened with [field specific]... in [period]".$NEW_LINE;
+    print "4. Trend [field specific] and [field specific] over [period]".$NEW_LINE;
     print "5. Option five".$NEW_LINE;
     print "6. Option six".$NEW_LINE;
     print "7. Etc".$NEW_LINE;
@@ -117,6 +133,7 @@ sub printOptions{
 }
 
 sub getYearRange{
+    my @years;
     my $continue = $FALSE;
     print "Choose the range of years you would like to examine (Min: 1994 - Max: 2014).\n";
 
@@ -131,7 +148,7 @@ sub getYearRange{
 
     } while($continue == $FALSE);
     chomp $startingYear;
-
+    $years[0] = $startingYear;
     do {
         print "Ending year:";
         $endingYear = <STDIN>;
@@ -144,8 +161,9 @@ sub getYearRange{
     } while($continue == $FALSE);
 
     chomp $endingYear;
-
+    $years[1] = $endingYear;
     # print $startingYear." ".$endingYear.$NEW_LINE;
+    return (@endingYear);
 }
 
 sub validateStartYear{
@@ -187,8 +205,45 @@ sub clearScreen{
     return;
 }
 
+
+
+
+sub valMaxMin{
+    my @years = $_[0];
+    clearScreen();
+    #todo
+    return;
+}
+
+sub valComp{
+    my $continue = $false;
+    my @years = $_[0];
+    my $fieldOneComp;
+    my $fieldTwoComp;
+    my $maxFlag;
+    my $fieldOfComp;
+    clearScreen();
+    print "Please select the field for the first block";
+    print "[Field specific] or [Field specific] has [least/most] in [field specific] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
+    
+    return;
+}
+
+sub valGet{
+    my @years = $_[0];
+    clearScreen();
+    #todo
+    return;
+
+}
+
+sub trend{
+    my @years = $_[0];
+    clearScreen();
+    #todo
+    return;
+}
+
 # TODO
 # Present users 
 # Get user input for which template they want to use
-
-
