@@ -145,36 +145,44 @@ sub printOptions{
 }
 
 sub getYearRange{
+    my $RANGE_PROMPT = "Choose the range of years you would like to examine (Min: 1994 - Max: 2014).\n";
+    my $YEAR_START_PROMPT = "Starting year:";
+    my $YEAR_END_PROMPT = "Ending year:"
+    my $INVALID_YEAR_PROMPT = "Invalid start year. Must be in the range of 1994 to 2014."
+    my $INVALID_RANGE_PROMPT_X = "Invalid start year. Must be in the range of ";
+    my $INVALID_RANGE_PROMPT_Y = " to 2014.";
+
     my @years;
     my $continue = $FALSE;
-    print "Choose the range of years you would like to examine (Min: 1994 - Max: 2014).\n";
+
+
+    print $RANGE_PROMPT;
 
     do {
-        print "Starting year:";
+        print $YEAR_START_PROMPT;
         $startingYear = readInput();
         $continue = validateStartYear($startingYear);
 
         if($continue == $FALSE){
-            print "Invalid start year. Must be in the range of 1994 to 2014.".$NEW_LINE;
+            print $INVALID_YEAR_PROMPT.$NEW_LINE;
         }
 
     } while($continue == $FALSE);
     chomp $startingYear;
     $years[0] = $startingYear;
     do {
-        print "Ending year:";
+        print $YEAR_END_PROMPT;
         $endingYear = readInput();
         $continue = validateEndYear($endingYear);
 
         if($continue == $FALSE){
-            print "Invalid start year. Must be in the range of ".$startingYear." to 2014.".$NEW_LINE;
+            print $INVALID_RANGE_PROMPT_X.$startingYear.$INVALID_RANGE_PROMPT_Y.$NEW_LINE;
         }
 
     } while($continue == $FALSE);
 
-    chomp $endingYear;
+    chomp($endingYear);
     $years[1] = $endingYear;
-    # print $startingYear." ".$endingYear.$NEW_LINE;
     return (@years);
 }
 
@@ -260,8 +268,7 @@ sub valComp{
     } while (($maxFlag != "M")&&($maxFlag != "m")&&($maxFlag != "l")&&($maxFlag != "L"));
 
     print "Please select the field for the last block [All fields are in the user manual]".$NEW_LINE;
-    if ($maxFlag == "m")
-    {
+    if ($maxFlag == "m"){
         print "[".$fieldOneComp."]"." or [".$fieldTwoComp."] has most occurences in [GENERAL FIELD] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
     }
     else
