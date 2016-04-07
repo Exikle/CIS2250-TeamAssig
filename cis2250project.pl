@@ -231,7 +231,9 @@ sub valComp{
     my $continue = $FALSE;
     my @years = $_[0];
     my $fieldOneComp;
+    my $fieldOneCompValue; #This is the value for the field (EXAMPLE: 1 is male in the Sex field)
     my $fieldTwoComp;
+    my $fieldTwoCompValue;
     my $maxFlag;
     my $fieldOfComp;
     
@@ -242,12 +244,14 @@ sub valComp{
     print "[FIELD SPECIFIC] or [Field specific] has [least/most] occurences in [general field] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
     
     $fieldOneComp = getField();
+    getFieldValue($fieldOneComp);
     clearScreen();
     
     print "Please select the field for the second block [All fields are in the user manual]".$NEW_LINE;
     print "[".$fieldOneComp."]"." or [FIELDSPECIFIC] has [least/most] occurences in [general field] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
     
     $fieldTwoComp = getField();
+    getFieldValue($fieldTwoComp);
     clearScreen();
 
     print "Are you looking for [M]ost or [L]east?".$NEW_LINE;
@@ -269,8 +273,127 @@ sub valComp{
         print "[".$fieldOneComp."]"." or [".$fieldTwoComp."] has most occurences in [GENERAL FIELD] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
     }
     $fieldOfComp = getField();
-
+    clearScreen();
     return;
+}
+
+sub getFieldValue {
+    my $field = $_[0];
+    switch($field) {
+    case "Death:Sex:Male" { return("M") }
+    case "Death:Sex:Female" { return("F") }
+    case "Death:ResidentStatus:Resident" { return(1) }
+    case "Death:ResidentStatus:ForeignResident" { return(4) }
+    case "Death:MoD:January" { return(01) }
+    case "Death:Mod:February" { return(02) }
+    case "Death:Mod:March" { return(03) }
+    case "Death:Mod:April" { return(04) }
+    case "Death:Mod:May" { return(05) }
+    case "Death:Mod:June" { return(06) }
+    case "Death:Mod:July" { return(07) }
+    case "Death:Mod:August" { return(08) }
+    case "Death:Mod:September" { return(09) }
+    case "Death:Mod:October" { return(10) }
+    case "Death:Mod:November" { return(11) }
+    case "Death:Mod:December" { return(12) }
+    case "Death:DoW:Monday" { return(2) }
+    case "Death:DoW:Tuesday" { return(3) }
+    case "Death:DoW:Wednesday" { return(4) }
+    case "Death:DoW:Thursday" { return(5) }
+    case "Death:DoW:Friday" { return(6) }
+    case "Death:DoW:Saturday" { return(7) }
+    case "Death:DoW:Sunday" { return(1) }
+    case "Death:MaritalStatus:Single" { return(1) }
+    case "Death:MaritalStatus:Married" { return(1) }
+    case "Death:MaritalStatus:Widowed" { return(1) }
+    case "Death:MaritalStatus:Divorced" { return(1) }
+    case "Death:Education03:8thOrLess" { return(1) }
+    case "Death:Education03:9TO12Drop" { return(2) }
+    case "Death:Education03:HSgrad" { return(3) }
+    case "Death:Education03:CollegeNoDegree" { return(4) }
+    case "Death:Education03:AssociateDegree" { return(5) }
+    case "Death:Education03:BachelorDegree" { return(6) }
+    case "Death:Education03:MasterDegree" { return(7) }
+    case "Death:Education03:DoctorateDegree" { return(8) }
+    case "Death:Education89:None" { return(00) }
+    case "Death:Education89:1YearHS" { return(09) }
+    case "Death:Education89:2YearHS" { return(10) }
+    case "Death:Education89:3YearHS" { return(11) }
+    case "Death:Education89:4YearHS" { return(12) }
+    case "Death:Education89:1YearCollege" { return(13) }
+    case "Death:Education89:2YearCollege" { return(14) }
+    case "Death:Education89:3YearCollege" { return(15) }
+    case "Death:Education89:4YearCollege" { return(16) }
+    case "Death:Education89:5MoreYearCollege" { return(17) }
+    case "Death:MethodOfDispositon:Burial" { return("B") }
+    case "Death:MethodOfDispositon:Cremation" { return("C") }
+    case "Death:MethodOfDispositon:Other" { return("O") }
+    case "Death:MethodOfDispositon:Unkown" { return("U") }
+    case "Death:MannerOfDeath:Accident" { return(1) }
+    case "Death:MannerOfDeath:Suicide" { return(2) }
+    case "Death:MannerOfDeath:Homocide" { return(3) }
+    case "Death:MannerOfDeath:PendingInvestigation" { return(4) }
+    case "Death:MannerOfDeath:SelfInflicted" { return(6) }
+    case "Death:MannerOfDeath:Natural" { return(7) }
+    case "Death:MannerOfDeath:NotSpecified" { return() }
+    case "Death:PoD:HospitalInpatient" { return(1) }
+    case "Death:PoD:HospitalOutpatient" { return(2) }
+    case "Death:PoD:HospitalDeadOnArrival" { return(3) }
+    case "Death:PoD:Home" { return(4) }
+    case "Death:PoD:HospiceFacility" { return(5) }
+    case "Death:PoD:NursingHome" { return(6) }
+    case "Death:Age:Years" { return(1) }
+    case "Death:Race:White" { return(01) }
+    case "Death:Race:Black" { return(02) }
+    case "Death:Race:AmericanIndian" { return(03) }
+    case "Death:Race:Chinese" { return(04) }
+    case "Death:Race:Japanese" { return(05) }
+    case "Death:Race:Hawaiian" { return(06) }
+    case "Death:Race:Filipino" { return(07) }
+    case "Death:Race:AsianIndian" { return(18) }
+    case "Death:Race:Korean" { return(28) }
+    case "Death:Race:Samoan" { return(38) }
+    case "Death:Race:Vietnamese" { return(48) }
+    case "Death:Race:Guamanian" { return(58) }
+    case "Birth:Child:Sex:Male" { return("M") }
+    case "Birth:Child:Sex:Female" { return("F") }
+    case "Birth:DoW:Monday" { return(2) }
+    case "Birth:DoW:Tuesday" { return(3) }
+    case "Birth:DoW:Wednesday" { return(4) }
+    case "Birth:DoW:Thursday" { return(5) }
+    case "Birth:DoW:Friday" { return(6) }
+    case "Birth:DoW:Saturday" { return(7) }
+    case "Birth:DoW:Sunday" { return(1) }
+    case "Birth:PlaceOfDelivery:Hospital" { return(1) }
+    case "Birth:PlaceOfDelivery:FreeStandingBirthCenter" { return(2) }
+    case "Birth:PlaceOfDelivery:HomeIntended" { return(3) }
+    case "Birth:Mom:Race:White" { return(1) }
+    case "Birth:Mom:Race:Black" { return(2) }
+    case "Birth:Mom:Race:AIAN" { return(3) }
+    case "Birth:Mom:Race:Asian" { return(4) }
+    case "Birth:Mom:Race:NHOPI" { return(5) }
+    case "Birth:Mom:MaritalStatus:Married" { return(1) }
+    case "Birth:Mom:MaritalStatus:Unmarried" { return(2) }
+    case "Birth:Mom:Education:8thOrElse" { return(1) }
+    case "Birth:Mom:Education:9TO12Drop" { return(2) }
+    case "Birth:Mom:Education:HSgrad" { return(3) }
+    case "Birth:Mom:Education:SomeCollege" { return(4) }
+    case "Birth:Mom:Education:BachelorDegree" { return(6) }
+    case "Birth:Mom:Education:MasterDegree" { return(7) }
+    case "Birth:Mom:Education:Doctorate" { return(8) }
+    case "Birth:Father:Race:White" { return(1) }
+    case "Birth:Father:Race:Black" { return(2) }
+    case "Birth:Father:Race:AIAN" { return(3) }
+    case "Birth:Father:Race:Asian" { return(4) }
+    case "Birth:Father:Race:NHOPI" { return(5) }
+    case "Birth:Father:Education:8thOrElse" { return(1) }
+    case "Birth:Father:Education:9TO12Drop" { return(2) }
+    case "Birth:Father:Education:HSgrad" { return(3) }
+    case "Birth:Father:Education:SomeCollege" { return(4) }
+    case "Birth:Father:Education:BachelorDegree" { return(6) }
+    case "Birth:Father:Education:MasterDegree" { return(7) }
+    case "Birth:Father:Education:Doctorate" { return(8) }
+    }
 }
 
 sub validateField {
@@ -347,12 +470,12 @@ sub validateField {
     case "Death:MoD:SelfInflicted" { return(1) }
     case "Death:MoD:Natural" { return(1) }
     case "Death:MoD:NotSpecified" { return(1) }
+    case "Death:PoD:HospitalInpatient" { return(1) }
+    case "Death:PoD:HospitalOutpatient" { return(1) }
+    case "Death:PoD:HospitalDeadOnArrival" { return(1) }
     case "Death:PoD:Home" { return(1) }
-    case "Death:PoD:School" { return(1) }
-    case "Death:PoD:AthleticsArea" { return(1) }
-    case "Death:PoD:Street" { return(1) }
-    case "Death:PoD:Industrial" { return(1) }
-    case "Death:PoD:Farm" { return(1) }
+    case "Death:PoD:HospiceFacility" { return(1) }
+    case "Death:PoD:NursingHome" { return(1) }
     case "Death:Age:Years" { return(1) }
     case "Death:Race:White" { return(1) }
     case "Death:Race:Black" { return(1) }
@@ -367,7 +490,7 @@ sub validateField {
     case "Death:Race:Vietnamese" { return(1) }
     case "Death:Race:Guamanian" { return(1) }
     case "Birth:TotalNumber" { return(1) }
-    case "Birth:Sex" { return(1) }
+    case "Birth:Child:Sex" { return(1) }
     case "Birth:Child:Birthweight" { return(1) }
     case "Birth:Child:TimeOfBirth" { return(1) }
     case "Birth:Child:Month" { return(1) }
@@ -451,7 +574,6 @@ sub valGet{
     clearScreen();
     #todo
     return;
-
 }
 
 sub trend{
