@@ -349,10 +349,11 @@ sub validateField {
     case "Death:Race:Samoan" { return(1) }
     case "Death:Race:Vietnamese" { return(1) }
     case "Death:Race:Guamanian" { return(1) }
-    case "Death:" { return(1) }
+    case "Birth:TotalNumber" { return(1) }
     case "Birth:Sex" { return(1) }
     case "Birth:Child:Birthweight" { return(1) }
     case "Birth:Child:TimeOfBirth" { return(1) }
+    case "Birth:Child:Month" { return(1) }
     case "Birth:Child:DoW" { return(1) }
     case "Birth:Mom:Age" { return(1) }
     case "Birth:Mom:Race" { return(1) }
@@ -379,19 +380,34 @@ sub validateField {
     case "Birth:PlaceOfDelivery:Hospital" { return(1) }
     case "Birth:PlaceOfDelivery:FreeStandingBirthCenter" { return(1) }
     case "Birth:PlaceOfDelivery:HomeIntended" { return(1) }
-    case "Birth:" { return(1) }
-    case "Birth:" { return(1) }
-    case "" { return(1) }
-    case "" { return(1) }
-    case "" { return(1) }
-    case "" { return(1) }
-    case "" { return(1) }
-
-
-
-
-
-
+    case "Birth:Mom:Race:White" { return(1) }
+    case "Birth:Mom:Race:Black" { return(1) }
+    case "Birth:Mom:Race:AIAN" { return(1) }
+    case "Birth:Mom:Race:Asian" { return(1) }
+    case "Birth:Mom:Race:NHOPI" { return(1) }
+    case "Birth:Mom:MaritalStatus:Married" { return(1) }
+    case "Birth:Mom:MaritalStatus:Unmarried" { return(1) }
+    case "Birth:Mom:Education:8thOrElse" { return(1) }
+    case "Birth:Mom:Education:9TO12Drop" { return(1) }
+    case "Birth:Mom:Education:HSgrad" { return(1) }
+    case "Birth:Mom:Education:SomeCollege" { return(1) }
+    case "Birth:Mom:Education:BachelorDegree" { return(1) }
+    case "Birth:Mom:Education:MasterDegree" { return(1) }
+    case "Birth:Mom:Education:Doctorate" { return(1) }
+    case "Birth:Father:Race:White" { return(1) }
+    case "Birth:Father:Race:Black" { return(1) }
+    case "Birth:Father:Race:AIAN" { return(1) }
+    case "Birth:Father:Race:Asian" { return(1) }
+    case "Birth:Father:Race:NHOPI" { return(1) }
+    case "Birth:Father:MaritalStatus:Married" { return(1) }
+    case "Birth:Father:MaritalStatus:Unmarried" { return(1) }
+    case "Birth:Father:Education:8thOrElse" { return(1) }
+    case "Birth:Father:Education:9TO12Drop" { return(1) }
+    case "Birth:Father:Education:HSgrad" { return(1) }
+    case "Birth:Father:Education:SomeCollege" { return(1) }
+    case "Birth:Father:Education:BachelorDegree" { return(1) }
+    case "Birth:Father:Education:MasterDegree" { return(1) }
+    case "Birth:Father:Education:Doctorate" { return(1) }
     }
     return;
 }
@@ -402,6 +418,7 @@ sub getField{
 
     do {
         $field = <STDIN>;
+        chomp($field);
         if (validateField($field) == 1)
         {
             $continue = $TRUE;
