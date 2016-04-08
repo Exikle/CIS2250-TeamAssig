@@ -232,9 +232,29 @@ sub valMaxMin{
     my @years;    
     my $mostOf = 0;
     my $isDeathStats = 0;
-    my $validField;
+    my $validField = $TRUE;
     my $fieldInp;
     my $statLoc = 0;
+    my $record_count = 0;
+
+    my $outlier;
+    my @valList;
+    my @records;
+    my @countArray;
+
+    my $fileName;
+    my $currentYear = $startingYear;
+
+    my $i;
+    my $j;
+
+
+    my $len = 0;
+    my @unique;
+    my @uCounter;
+
+    my $actuallyUnique = $TRUE;
+    my $forCount = -1;
 
 
     $years[0] = $_[0];
@@ -261,7 +281,7 @@ sub valMaxMin{
         print "Death statistics selected of ".$years[0]." to ".$years[1].$NEW_LINE;
     }
     else {
-        print "Birth statistics selected. ".$NEW_LINE
+        print "Birth statistics selected. ".$years[0]." to ".$years[1].$NEW_LINE;
     }
 
     do{
@@ -288,8 +308,72 @@ sub valMaxMin{
     }while($validField == $FALSE);
 
     $statLoc = getFieldLocation($fieldInp);
+    
+     my $xYear = 0;
+
+    while ($currentYear <= $years[1]) {
+        if ($isDeathStats == $TRUE){
+            $fileName = "Data/Death/".$currentYear."/deaths".$currentYear.".txt";
+        }
+        else{
+            $fileName = "Data/Birth/".$currentYear."/birth".$currentYear.".txt"; 
+        }
+        open my $file_fh, '<', $fileName
+            or die "Unable to open names file: $fileName\n";
+        @records = <$file_fh>;
+        close $file_fh or
+            die "Unable to close: $fileName\n";
+
+        clearScreen();
+        $record_count = 0;
+
+        foreach my $file_record ( @records ) {
+            if ($csv -> parse($file_record)){
+                my @master_fields = $csv->fields();
+                $record_count++;
+                $valList[$xYear][$record_count] = $master_fields[$statLoc];
+                # 
+                $actuallyUnique = $TRUE;
+                $forCount = -1;
+                foreach my $temp (@unique){
+                    $forCount++;
+                    if($temp == $master_fields[$statLoc]){
+                        $actuallyUnique = $FALSE;
+                        $uCounter[$forCount]++;
+                    }
+                }
+                if($actuallyUnique == $TRUE){
+                    $unique[$len] = $master_fields[$statLoc];
+                    $uCounter[$len]++;
+                    # print $unique[$len].$NEW_LINE;
+                    $len++;
+                }
+
+
+            } else {
+                warn "Line could not be prepared";
+            }
+        }   
+
+
+        $currentYear++;
+        $xYear++;
+    }
+    $forCount = 0;
+    foreach my $temp (@unique){
+        print $uCounter[$forCount].$NEW_LINE;
+        $forCount++;
+    }
+
+    waitForKey();
     # 
     #todo
+    return;
+
+}
+
+sub waitForKey{
+    <STDIN>;
     return;
 }
 
@@ -1033,7 +1117,7 @@ sub readInput{
     chomp($input);
     if(lc($input) eq "quit"){
         print $QUITTING_PROMPT.$SPACE.$ENTER_CONTINUE.$NEW_LINE;
-        <STDIN>;
+        waitForKey();
         system("clear");
         exit();
     }
