@@ -27,7 +27,7 @@ if ($fileName eq "grapher/comp.txt") {
 }
 
 elsif ($fileName eq "grapher/maxMin.txt") {
-
+	$R->run(q`ggplot(data, aes(x =fieldName, y=fieldTotalValue, fill = fieldName)) + geom_bar(colour = "black", stat="identity") + guides(fill = FALSE) + xlab("Stat") + ylab("Total Number of occurrences") + ggtitle("Comparison of given fields");`);
 }
 
 elsif ($fileName eq "grapher/getVal") {

@@ -364,25 +364,57 @@ sub valMaxMin{
     my $reqField;
     my $reqFieldVal = $uCounter[$forCount];
     foreach my $temp (@unique){
-        print $temp." --- ".$uCounter[$forCount].$NEW_LINE;
+        # print $temp." --- ".$uCounter[$forCount].$NEW_LINE;
 
         if($mostOf == 1) { #Most
             if($uCounter[$forCount] >  $reqFieldVal){
                 $reqFieldVal = $uCounter[$forCount];
+                # print "Bam more";
+                $reqField = $temp;
+                # print $temp." --- ".$uCounter[$forCount].$NEW_LINE;
             }
         }
-        else {
+        else { #Less
             if($uCounter[$forCount] < $reqFieldVal){
                 $reqFieldVal = $uCounter[$forCount];
+                # print "Bam less";
+                $reqField = $temp;
+                # print $temp." --- ".$uCounter[$forCount].$NEW_LINE;
             }
         }
 
         $forCount++;
     }
 
-    waitForKey();
+    if($mostOf == 1) { #Most
+        print "The max stat in ".$fieldInp." is:".$NEW_LINE;
+    }
+    else{
+        print "The lowest stat in ".$fieldInp." is:".$NEW_LINE;
+    }
+    print $reqField." at ".$reqFieldVal.$NEW_LINE;
+
     # 
     #todo graphing
+
+
+    # print $fieldOneComp.": ".$fieldOneTotalValue." ".$fieldTwoComp.": ".$fieldTwoTotalValue.$NEW_LINE;
+    open (my $fh, '>', 'grapher/maxMin.txt');
+    print $fh "\"fieldName\",\"fieldTotalValue\"\n";
+
+    $forCount = 0;
+    foreach my $temp (@unique){
+        print $fh $temp.",".$uCounter[$forCount].$NEW_LINE;
+    }
+
+    close $fh;
+
+    system("perl grapher/plotter.pl grapher/maxMin.txt grapher/output.pdf");
+
+    print "Press enter to see the graph".$NEW_LINE;
+    waitForKey();
+
+
     return;
 
 }
