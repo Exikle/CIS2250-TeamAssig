@@ -579,7 +579,7 @@ sub valComp{
     system("perl grapher/plotter.pl grapher/comp.txt grapher/".$fieldOneComp."_vs_".$fieldTwoComp.".output.pdf");
     print "Press enter to see the graph".$NEW_LINE;
     waitForKey();
-    system("gnome-open grapher/output.pdf");
+    system("open grapher/output.pdf");
     return;
 }
 
