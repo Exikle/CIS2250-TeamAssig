@@ -280,8 +280,9 @@ sub valMaxMin{
 sub valComp{
     my $continue = $FALSE;
     my @years;
-    my @filename = $EMPTY;
-    
+    my @records;
+    my $filename = $EMPTY;
+    my $currentYear;
     $years[0] = $_[0];
     $years[1] = $_[1];
     my $fieldOneComp;
@@ -292,7 +293,7 @@ sub valComp{
     my $fieldTwoLocation;
     my $maxFlag;
     my $fieldOfComp;
-    
+    $currentYear = $years[0];
     clearScreen();
     
     # ask first specific
@@ -341,8 +342,19 @@ sub valComp{
         }
     }while (($fieldOfComp != "Death:TotalNumber")||($fieldOfComp != "Birth:TotalNumber"));
     clearScreen();
-    #if Where im working
-
+    while ($currentYear <= $years[1]) {
+        if ($fieldOfComp == "Death:TotalNumber") {
+            $fileName = "Death/".$currentYear."/".$currentYear.".txt";
+        }
+        else {
+            $fileName = "Birth/".$currentYear."/".$currentYear.".txt"; 
+        }
+        open my $file_fh, '<', $fileName
+            or die "Unable to open names file: $filename\n";
+        @records = <$names_fh>;
+        close $file_fh or
+            die "Unable to close: $filename\n";
+    }
 
     return;
 }
