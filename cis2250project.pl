@@ -296,18 +296,23 @@ sub valComp{
     my $continue = $FALSE;
     my @years;
     my @records;
-    my $filename = $EMPTY;
+    my $fileName = $EMPTY;
     my $currentYear;
     $years[0] = $_[0];
     $years[1] = $_[1];
     my $fieldOneComp;
     my $fieldOneCompValue; #This is the value for the field (EXAMPLE: 1 is male in the Sex field)
     my $fieldOneLocation;
+    my $fieldOneTotalValue = 0;
+    my @fieldOneArray;
     my $fieldTwoComp;
     my $fieldTwoCompValue;
     my $fieldTwoLocation;
+    my $fieldTwoTotalValue = 0;
+    my @fieldTwoArray;
     my $maxFlag;
     my $fieldOfComp;
+    my $record_count = -1;
     $currentYear = $years[0];
     clearScreen();
     
@@ -327,7 +332,7 @@ sub valComp{
     do {
         $fieldTwoComp = getField();
         $fieldTwoCompValue = getFieldValue($fieldTwoComp);
-        $fieldOneLocation = getFieldLocation($fieldTwoComp);
+        $fieldTwoLocation = getFieldLocation($fieldTwoComp);
         if ($fieldOneLocation != $fieldTwoLocation) {
             print $INVALID_FIELD." Make sure the field specific you choose belongs to the same as the first one you chose.".$NEW_LINE;
         }
@@ -359,18 +364,43 @@ sub valComp{
     clearScreen();
     while ($currentYear <= $years[1]) {
         if ($fieldOfComp == "Death:TotalNumber") {
-            $fileName = "Death/".$currentYear."/".$currentYear.".txt";
+            $fileName = "Data/Death/".$currentYear."/deaths".$currentYear.".txt";
         }
         else {
-            $fileName = "Birth/".$currentYear."/".$currentYear.".txt"; 
+            $fileName = "Data/Birth/".$currentYear."/birth".$currentYear.".txt"; 
         }
         open my $file_fh, '<', $fileName
-            or die "Unable to open names file: $filename\n";
-        @records = <$names_fh>;
+            or die "Unable to open names file: $fileName\n";
+        @records = <$file_fh>;
         close $file_fh or
-            die "Unable to close: $filename\n";
+            die "Unable to close: $fileName\n";
+        foreach my $file_record ( @records ) {
+            if ($csv -> parse($file_record)){
+                my @master_fields = $csv->fields();
+                $record_count++;
+                clearScreen();
+                print $record_count;
+                $fieldOneArray[$record_count] = $master_fields[$fieldOneLocation];
+                $fieldTwoArray[$record_count] = $master_fields[$fieldTwoLocation];
+            } else {
+                warn "Line could not be prepared";
+            }
+        }
+        for my $i (0..$record_count) {
+            print $i.$NEW_LINE;
+            if ($fieldOneArray[$record_count] == $fieldOneCompValue)
+            {
+                $fieldOneTotalValue++;
+            }
+            elsif ($fieldTwoArray[$record_count] == $fieldTwoCompValue)
+            {
+                $fieldTwoTotalValue++;
+            }
+        }
+        
     }
-
+    print $fieldOneTotalValue."     ".$fieldTwoTotalValue;
+    <STDIN>;
     return;
 }
 
