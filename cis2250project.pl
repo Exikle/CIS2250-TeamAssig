@@ -42,6 +42,7 @@ my $INVALID_CHOICE = "Not a valid choice, try again.";
 my $DIVIDER = "==========================================";
 my $HEADER = "BIG BANG CDC Death/ Birth statistics program".$NEW_LINE.$DIVIDER.$NEW_LINE;
 my $QUITTING_PROMPT = "Quitting. Thanks for using.";
+my $ENTER_CONTINUE = "Press any key to continue.";
 
 
 
@@ -63,13 +64,24 @@ main();
 #
 
 sub main{
-    my $template;
     my @years;
+    
     clearScreen();
     @years = getYearRange();
-    clearScreen();
 
+    clearScreen();
+    manualReminder();
+    
+    clearScreen();
     startUserChoices($years[0], $years[1]);
+    
+    system("clear");
+    return;
+}
+
+sub manualReminder{
+    print "Don't forget to take a look at the manual to get the fields required! ".$ENTER_CONTINUE.$NEW_LINE;
+    <STDIN>;
     return;
 }
 
@@ -91,11 +103,11 @@ sub startUserChoices {
 
         switch($choice){
             case 1 {
-                valMaxMin(@years);
+                valMaxMin($years[0], $years[1]);
             }
             case 2 {
-                print $years[0].$NEW_LINE;
-                print $years[1].$NEW_LINE;
+                # print $years[0].$NEW_LINE;
+                # print $years[1].$NEW_LINE;
 
                 valComp($years[0], $years[1]);
             }
@@ -221,14 +233,16 @@ sub clearScreen{
 
 #  bar graph
 sub valMaxMin{
-    my @years = $_[0];
-    my $mostOf;
+    my @years;
+    $years[0] = $_[0];
+    $years[1] = $_[1];
+    my $mostOf = 0;
     my $isDeathStats = 0;
     clearScreen();
 
     # print "RUN VALMAXMIN";
     do{
-        if(isDeathStats != 0){
+        if($isDeathStats != 0){
             print $INVALID_CHOICE.$NEW_LINE;
         }
 
@@ -238,23 +252,28 @@ sub valMaxMin{
         print "Choice: ";
         $isDeathStats = readInput();
 
-    }while($isDeathStats != 1 || $isDeathStats != 2);
+    }while($isDeathStats != 1 && $isDeathStats != 2);
 
     clearScreen();
     if($isDeathStats == $TRUE){
-        print "Death statistics selected.".$NEW_LINE;
+        print "Death statistics selected of ".$years[0]." to ".$years[1].$NEW_LINE;
     }
     else {
         print "Birth statistics selected. ".$NEW_LINE
     }
 
-    print "Did you want to find:".$NEW_LINE;
-    print "1. The most of a statistic".$NEW_LINE;
-    print "2. The least of a statistic".$NEW_LINE;
-    print "Choice: ";
-    $mostOf = readInput();
+    do{
+        if($mostOf != 0){
+            print $INVALID_CHOICE.$NEW_LINE;
+        }
+        print "Did you want to find:".$NEW_LINE;
+        print "1. The most of a specific statistic".$NEW_LINE;
+        print "2. The least of a specific statistic".$NEW_LINE;
+        print "Choice: ";
+        $mostOf = readInput();
 
-    clearScreen();
+        clearScreen();
+    }while($mostOf != 1 && $mostOf != 2);
 
     #todo
     return;
@@ -842,7 +861,7 @@ sub readInput{
     my $input = <STDIN>;
     chomp($input);
     if(lc($input) eq "quit"){
-        print $QUITTING_PROMPT.$NEW_LINE;
+        print $QUITTING_PROMPT.$SPACE.$ENTER_CONTINUE.$NEW_LINE;
         <STDIN>;
         system("clear");
         exit();
