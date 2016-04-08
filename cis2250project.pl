@@ -232,9 +232,21 @@ sub valMaxMin{
     my @years;    
     my $mostOf = 0;
     my $isDeathStats = 0;
-    my $validField;
+    my $validField = $TRUE;
     my $fieldInp;
     my $statLoc = 0;
+    my $record_count = 0;
+
+    my $outlier;
+    my @valList;
+    my @records;
+    my @countArray;
+
+    my $fileName;
+    my $currentYear = $startingYear;
+
+    my $i;
+    my $j;
 
 
     $years[0] = $_[0];
@@ -288,9 +300,68 @@ sub valMaxMin{
     }while($validField == $FALSE);
 
     $statLoc = getFieldLocation($fieldInp);
+    
+     my $xYear = 0;
+
+    while ($currentYear <= $years[1]) {
+        if ($isDeathStats == $TRUE){
+            $fileName = "Data/Death/".$currentYear."/deaths".$currentYear.".txt";
+        }
+        else{
+            $fileName = "Data/Birth/".$currentYear."/birth".$currentYear.".txt"; 
+        }
+        open my $file_fh, '<', $fileName
+            or die "Unable to open names file: $fileName\n";
+        @records = <$file_fh>;
+        close $file_fh or
+            die "Unable to close: $fileName\n";
+
+        clearScreen();
+        $record_count = 0;
+        foreach my $file_record ( @records ) {
+            if ($csv -> parse($file_record)){
+                my @master_fields = $csv->fields();
+                $record_count++;
+                $valList[$xYear][$record_count] = $master_fields[$statLoc];
+            } else {
+                warn "Line could not be prepared";
+            }
+        }   
+
+
+        $currentYear++;
+        $xYear++;
+    }
+    my $len = 0;
+    my @unique;
+
+    my @unique;
+    $unique[len][0] = valList[0][0];
+
+    for my $x (0..$xYear){
+        for my $y (0..$record_count){
+            foreach my $temp (@unique){
+                if ($valList[$x][$y] != $temp){
+                    len++;
+                    $unique[len] = $temp;
+                }
+            }
+        }
+    }
+
+    for my $x (0..$xYear){
+        for my $y (0..$record_count){
+            if ($valList[$x][$y] == $unique[]){
+
+            }
+        }
+    }
+
+
     # 
     #todo
     return;
+
 }
 
 sub valComp{
