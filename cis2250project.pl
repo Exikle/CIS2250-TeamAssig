@@ -41,6 +41,8 @@ my $INVALID_FIELD = "Not a valid field, try again.";
 my $INVALID_CHOICE = "Not a valid choice, try again.";
 my $DIVIDER = "==========================================";
 my $HEADER = "BIG BANG Death/ Birth statistics program".$NEW_LINE.$DIVIDER.$NEW_LINE;
+my $QUITTING_PROMPT = "Quitting. Thanks for using.";
+
 
 
 
@@ -75,7 +77,6 @@ sub startUserChoices {
     my @years;
     $years[0] = $_[0];
     $years[1] = $_[1];
-    my $QUITTING_PROMPT = "Quitting. Thanks for using.";
     my $CHOICE_PROMPT = "Choice: ";
 
     my $choice = 1;
@@ -660,6 +661,10 @@ sub trend{
 sub readInput{
     my $input = <STDIN>;
     chomp($input);
+    if(lc($input) eq "quit"){
+        print $QUITTING_PROMPT.$NEW_LINE;
+        exit();
+    }
     return $input;
 }
 
