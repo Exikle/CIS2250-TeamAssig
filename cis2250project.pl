@@ -223,16 +223,22 @@ sub clearScreen{
 sub valMaxMin{
     my @years = $_[0];
     my $mostOf;
-    my $isDeathStats;
+    my $isDeathStats = 0;
     clearScreen();
 
     # print "RUN VALMAXMIN";
+    do{
+        if(isDeathStats != 0){
+            print $INVALID_CHOICE.$NEW_LINE;
+        }
 
-    print "Did you want to find out:".$NEW_LINE;
-    print "1. Death statistics".$NEW_LINE;
-    print "2. Birth statistics".$NEW_LINE;
-    print "Choice: ";
-    $isDeathStats = readInput();
+        print "Did you want to find out:".$NEW_LINE;
+        print "1. Death statistics".$NEW_LINE;
+        print "2. Birth statistics".$NEW_LINE;
+        print "Choice: ";
+        $isDeathStats = readInput();
+
+    }while($isDeathStats != 1 || $isDeathStats != 2);
 
     clearScreen();
     if($isDeathStats == $TRUE){
