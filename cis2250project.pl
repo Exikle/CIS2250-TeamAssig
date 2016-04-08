@@ -38,6 +38,7 @@ my $NEW_LINE    = "\n";
 my $SPACE       = " ";
 my $COMMA       = q{,};
 my $INVALID_FIELD = "Not a valid field, try again.";
+my $INVALID_CHOICE = "Not a valid choice, try again.";
 
 
 
@@ -63,26 +64,18 @@ sub main{
     clearScreen();
     @years = getYearRange();
     clearScreen();
-    $template = startUserChoices();
-    switch ($template)
-    {
-        case 1 {
-         valMaxMin(@years);
-        }
-        case 2 {
-         valComp(@years);
-        }
-        case 3 {
-         valGet(@years);
-        }
-        case 4 {
-         trend(@years);
-        }
-    }
+
+    startUserChoices($years[0], $years[1]);
     return;
 }
 
 sub startUserChoices {
+    my @years;
+    $years[0] = $_[0];
+    $years[1] = $_[1];
+    my $QUITTING_PROMPT = "Quitting. Thanks for using.";
+    my $CHOICE_PROMPT = "Choice: ";
+
     my $choice = 1;
     my $validChoice = $TRUE;
 
@@ -90,42 +83,31 @@ sub startUserChoices {
         $validChoice = $TRUE;
 
         printOptions();
-
-        print "Choice?: ";
+        print $CHOICE_PROMPT;
         $choice = readInput();
 
         switch($choice){
-            print $choice;
             case 1 {
-              print "One chosen".$NEW_LINE;
-            }
-            case "1"{
-              print "One1 chosen".$NEW_LINE;
-            }
-            case '1'{
-              print "One2 chosen".$NEW_LINE;
+                valMaxMin(@years);
             }
             case 2 {
-              print "Two chosen".$NEW_LINE ;
+                print $years[0].$NEW_LINE;
+                print $years[1].$NEW_LINE;
+
+                valComp($years[0], $years[1]);
             }
             case 3 {
-              print "Three chosen".$NEW_LINE ;
+                valGet(@years);
             }
             case 4 {
-              print "Four chosen".$NEW_LINE ;
+                trend(@years);
             }
             case 5 {
-              print "Five chosen".$NEW_LINE ;
-            }
-            case 6 {
-              print "Six chosen".$NEW_LINE ;
-            }
-            case 7 {
-              print "Etc chosen".$NEW_LINE ;
+                print $QUITTING_PROMPT.$NEW_LINE;
             }
             else {
                 $validChoice = $FALSE;
-                print "Invalid choice".$NEW_LINE;
+                print $INVALID_CHOICE.$NEW_LINE;
             }
 
         }
@@ -147,8 +129,8 @@ sub printOptions{
 sub getYearRange{
     my $RANGE_PROMPT = "Choose the range of years you would like to examine (Min: 1994 - Max: 2014).\n";
     my $YEAR_START_PROMPT = "Starting year:";
-    my $YEAR_END_PROMPT = "Ending year:"
-    my $INVALID_YEAR_PROMPT = "Invalid start year. Must be in the range of 1994 to 2014."
+    my $YEAR_END_PROMPT = "Ending year:";
+    my $INVALID_YEAR_PROMPT = "Invalid start year. Must be in the range of 1994 to 2014.";
     my $INVALID_RANGE_PROMPT_X = "Invalid start year. Must be in the range of ";
     my $INVALID_RANGE_PROMPT_Y = " to 2014.";
 
@@ -168,7 +150,6 @@ sub getYearRange{
         }
 
     } while($continue == $FALSE);
-    chomp $startingYear;
     $years[0] = $startingYear;
     do {
         print $YEAR_END_PROMPT;
@@ -180,8 +161,6 @@ sub getYearRange{
         }
 
     } while($continue == $FALSE);
-
-    chomp($endingYear);
     $years[1] = $endingYear;
     return (@years);
 }
@@ -231,13 +210,17 @@ sub clearScreen{
 sub valMaxMin{
     my @years = $_[0];
     clearScreen();
+
+    print "RUN VALMAXMIN";
     #todo
     return;
 }
 
 sub valComp{
     my $continue = $FALSE;
-    my @years = $_[0];
+    my @years;
+    $years[0] = $_[0];
+    $years[1] = $_[1];
     my $fieldOneComp;
     my $fieldTwoComp;
     my $maxFlag;
@@ -246,14 +229,15 @@ sub valComp{
     clearScreen();
     
     # ask first specific
-    print "Please select the field for the first block [All fields are in user manual]".$NEW_LINE;
-    print "[FIELD SPECIFIC] or [Field specific] has [least/most] occurences in [general field] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
+
+    print "Please select the field for the first block (Refer to user manual)".$NEW_LINE;
+    print "[FIELD ONE] or [FIELD TWO] has [LEAST/ MOST] occurences in [GENERAL FIELD] from ".$years[0]." to ".$years[1].$NEW_LINE.$NEW_LINE;
     
     $fieldOneComp = getField();
     clearScreen();
     
-    print "Please select the field for the second block [All fields are in the user manual]".$NEW_LINE;
-    print "[".$fieldOneComp."]"." or [FIELDSPECIFIC] has [least/most] occurences in [general field] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
+    print "Please select the field for the second block (Refer to user manual)".$NEW_LINE;
+    # print "[".$fieldOneComp."]"." or [FIELDSPECIFIC] has [LEAST/ MOST] occurences in [GENERAL FIELD] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
     
     $fieldTwoComp = getField();
     clearScreen();
@@ -433,16 +417,16 @@ sub validateField {
     case "Birth:Father:Education:MasterDegree" { return($TRUE) }
     case "Birth:Father:Education:Doctorate" { return($TRUE) }
     }
-    return;
+    return $FALSE;
 }
 
 sub getField{
     my $continue = $FALSE;
-    my $field = "";
+    my $field;
 
     do {
         $field = readInput(); 
-        if (validateField($field) == 1)
+        if (validateField($field) == $TRUE)
         {
             $continue = $TRUE;
         }
