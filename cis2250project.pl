@@ -39,6 +39,10 @@ my $SPACE       = " ";
 my $COMMA       = q{,};
 my $INVALID_FIELD = "Not a valid field, try again.";
 my $INVALID_CHOICE = "Not a valid choice, try again.";
+my $DIVIDER = "==========================================";
+my $HEADER = "BIG BANG CDC Death/ Birth statistics program".$NEW_LINE.$DIVIDER.$NEW_LINE;
+my $QUITTING_PROMPT = "Quitting. Thanks for using.";
+
 
 
 
@@ -73,7 +77,6 @@ sub startUserChoices {
     my @years;
     $years[0] = $_[0];
     $years[1] = $_[1];
-    my $QUITTING_PROMPT = "Quitting. Thanks for using.";
     my $CHOICE_PROMPT = "Choice: ";
 
     my $choice = 1;
@@ -120,16 +123,14 @@ sub printOptions{
     print "2. Value Compare[field specific] or [field specific] has [least/most] occurences in [field specific] in [period]".$NEW_LINE;
     print "3. Value Get [field specific], happenec with [field specific] happened with [field specific]... in [period]".$NEW_LINE;
     print "4. Trend [field specific] and [field specific] over [period]".$NEW_LINE;
-    print "5. Option five".$NEW_LINE;
-    print "6. Option six".$NEW_LINE;
-    print "7. Etc".$NEW_LINE;
+    print "5. Quit (or type quit)".$NEW_LINE;
     return;
 }
 
 sub getYearRange{
     my $RANGE_PROMPT = "Choose the range of years you would like to examine (Min: 1994 - Max: 2014).\n";
-    my $YEAR_START_PROMPT = "Starting year:";
-    my $YEAR_END_PROMPT = "Ending year:";
+    my $YEAR_START_PROMPT = "Starting year: ";
+    my $YEAR_END_PROMPT = "Ending year: ";
     my $INVALID_YEAR_PROMPT = "Invalid start year. Must be in the range of 1994 to 2014.";
     my $INVALID_RANGE_PROMPT_X = "Invalid start year. Must be in the range of ";
     my $INVALID_RANGE_PROMPT_Y = " to 2014.";
@@ -165,10 +166,19 @@ sub getYearRange{
     return (@years);
 }
 
+sub isNotAlpha{
+    if ($_[0] =~ /^[0-9,.E]+$/){
+        return  $TRUE;
+    }
+    else {
+        return $FALSE;
+    }
+}
+
 sub validateStartYear{
     my $year = $_[0];
 
-    if ($year =~ /^[0-9,.E]+$/){}
+    if (isNotAlpha($year)){}
     else { return $FALSE; }
 
     if($year < 1994){
@@ -185,7 +195,7 @@ sub validateStartYear{
 sub validateEndYear{
     my $year = $_[0];
 
-    if ($year =~ /^[0-9,.E]+$/){}
+    if (isNotAlpha($year)){}
     else { return $FALSE; }
 
     if($year < $startingYear){
@@ -201,17 +211,45 @@ sub validateEndYear{
 
 sub clearScreen{
     system("clear");
+    print $HEADER;
     return;
 }
 
 
 
+# Value Max/Min [Least/Most] [deaths or [field specific]] in [field] between [period]
 
+#  bar graph
 sub valMaxMin{
     my @years = $_[0];
+    my $mostOf;
+    my $isDeathStats;
     clearScreen();
 
-    print "RUN VALMAXMIN";
+    # print "RUN VALMAXMIN";
+
+    print "Did you want to find out:".$NEW_LINE;
+    print "1. Death statistics".$NEW_LINE;
+    print "2. Birth statistics".$NEW_LINE;
+    print "Choice: ";
+    $isDeathStats = readInput();
+
+    clearScreen();
+    if($isDeathStats == $TRUE){
+        print "Death statistics selected.".$NEW_LINE;
+    }
+    else {
+        print "Birth statistics selected. ".$NEW_LINE
+    }
+
+    print "Did you want to find:".$NEW_LINE;
+    print "1. The most of a statistic".$NEW_LINE;
+    print "2. The least of a statistic".$NEW_LINE;
+    print "Choice: ";
+    $mostOf = readInput();
+
+    clearScreen();
+
     #todo
     return;
 }
@@ -698,8 +736,7 @@ sub getField{
 
     do {
         $field = readInput(); 
-        if (validateField($field) == $TRUE)
-        {
+        if (validateField($field) == $TRUE){
             $continue = $TRUE;
         }
         else{
@@ -717,34 +754,35 @@ sub valGet{
     my $total = 0;
     my $continue = $FALSE;
 
+    my $userInput;
+
     clearScreen();
-    print "Please select the field(s) for the first block [All fields are in user manual]".$NEW_LINE;
-    print "[Field specific] that happened with [Field specific] (no limit to # of field specific) from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
-    do {
-        print "Field specific: ".$NEW_LINE;
-        $fields[fieldCount] = <STDIN>;
-        if (validateField($fieldOneComp) == 1)
-        {
-            $fieldCount++;
-        }
-        else
-        {
-            print "NOT A VALID FIELD".$NEW_LINE;
-        }
 
-        print "Add new field specifc? (y)es or (n)o.".$NEW_LINE;
+    # print "Please select the field(s) for the first block [All fields are in user manual]".$NEW_LINE;
+    # print "[Field specific] that happened with [Field specific] (no limit to # of field specific) from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
+    # do {
+    #     print "Field specific: ".$NEW_LINE;
+    #     $userInput = readInput();
 
-        if(<STDIN> == "n") {
-            $continue = $TRUE;
-        }
+    #     $fields[fieldCount] = $userInput;
+    #     if (validateField($fieldOneComp) == $TRUE){
+    #         $fieldCount++;
+    #     }
+    #     else{$
+    #         print $INVALID_FIELD.$NEW_LINE;
+    #     }
+
+    #     print "Add new field specifc? (y)es or (n)o.".$NEW_LINE;
+    #     userInput = readInput();
+    #     if(userInput == "n") {
+    #         $continue = $TRUE;
+    #     }
         
-    } while ($continue == $FALSE);
+    # } while ($continue == $FALSE);
 
-    }
-
-    for my $i ( 0..$yearsTotal-1 ) {
-        total += openFile($years[0]+$i, @fields, $fieldCount);
-    }
+    # for my $i ( 0..$yearsTotal-1 ) {
+    #     total += openFile($years[0]+$i, @fields, $fieldCount);
+    # }
 
     #todo
     return;
@@ -757,44 +795,50 @@ sub openFile{
     my $record_count = 0;
     my $total = 0;
 
-    open my $year_fh, '<', "$year".".txt"
-       or die "Unable to open file\n";
+    # open my $year_fh, '<', "$year".".txt"
+    #    or die "Unable to open file\n";
 
-    my @records = <$names_fh>;
+    # my @records = <$names_fh>;
 
-    close $year_fh or
-       die "Unable to close\n";
+    # close $year_fh or
+    #    die "Unable to close\n";
 
-    foreach my $year_record ( @records ) {
-       if ( $csv->parse($year_record) ) {
-          my @master_fields = $csv->fields();
-          $record_count++;
-          for my $i ( 0..$fieldCount ){
-            if ($master_fields[] eq $fields[$i]) { #### get this resolved
-                $total++;
-            }
-          }
-       } else {
-          warn "Line/record could not be parsed\n";
-       }
-    }
+    # foreach my $year_record ( @records ) {
+    #    if ( $csv->parse($year_record) ) {
+    #       my @master_fields = $csv->fields();
+    #       $record_count++;
+    #       for my $i ( 0..$fieldCount ){
+    #         if ($master_fields[] eq $fields[$i]) { #### get this resolved
+    #             $total++;
+    #         }
+    #       }
+    #    }
+    #    else {
+    #       warn "Line/record could not be parsed\n";
+    #    }
+    # }
 
     return $total;
 }
 
 sub trend{
-    my @years = $_[0];
+    # my @years = $_[0];
+
     clearScreen();
+    
+    print "running trends code.";
     #todo
-    return;
+    return 
 }
 
 sub readInput{
     my $input = <STDIN>;
     chomp($input);
+    if(lc($input) eq "quit"){
+        print $QUITTING_PROMPT.$NEW_LINE;
+        <STDIN>;
+        system("clear");
+        exit();
+    }
     return $input;
 }
-
-# TODO
-# Present users 
-# Get user input for which template they want to use
