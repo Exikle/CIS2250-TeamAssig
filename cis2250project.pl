@@ -267,6 +267,7 @@ sub valComp{
     $years[1] = $_[1];
     my $fieldOneComp;
     my $fieldOneCompValue; #This is the value for the field (EXAMPLE: 1 is male in the Sex field)
+    my $fieldOneLocation;
     my $fieldTwoComp;
     my $fieldTwoCompValue;
     my $maxFlag;
@@ -466,8 +467,8 @@ sub getFieldLocation {
 sub getFieldValue {
     my $field = $_[0];
     switch($field) {
-    case "Death:Sex:Male" { return("M") }
-    case "Death:Sex:Female" { return("F") }
+    case "Death:Sex:Male" { return(1) }
+    case "Death:Sex:Female" { return(2) }
     case "Death:ResidentStatus:Resident" { return(1) }
     case "Death:ResidentStatus:ForeignResident" { return(4) }
     case "Death:MoD:January" { return(01) }
