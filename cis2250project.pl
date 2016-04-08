@@ -403,7 +403,7 @@ sub valComp{
     # ask first specific
     clearScreen();
     print "Please select the field for the first block (Refer to user manual)".$NEW_LINE;
-    print "[FIELD ONE] or [FIELD TWO] has [LEAST/ MOST] occurences in [GENERAL FIELD] from ".$years[0]." to ".$years[1].$NEW_LINE.$NEW_LINE;
+    print "[FIELD ONE] or [FIELD TWO] has [LEAST/ MOST] occurences in [Birth/Death] from ".$years[0]." to ".$years[1].$NEW_LINE.$NEW_LINE;
     
     do {
         $fieldOneComp = getField();
@@ -428,7 +428,14 @@ sub valComp{
         }
     } while ($fieldOneLocation != $fieldTwoLocation);
     clearScreen();
-
+    if (substr($fieldOneComp, 0, 1) eq "D")
+    {
+        $fieldOfComp = "Death";
+    }
+    elsif (substr($fieldOneComp, 0, 1) eq "B")
+    {
+        $fieldOfComp = "Birth";
+    }
     print "Are you looking for [M]ost or [L]east?".$NEW_LINE;
     do {
         $maxFlag = lc(readInput());
@@ -442,31 +449,12 @@ sub valComp{
 
 
 
-    print "Please select the field for the last block [All fields are in the user manual]".$NEW_LINE;
-    if ($maxFlag eq "m"){
-        print "[".$fieldOneComp."]"." or [".$fieldTwoComp."] has most occurences in [GENERAL FIELD] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
-    }
-    else
-    {
-        print "[".$fieldOneComp."]"." or [".$fieldTwoComp."] has most occurences in [GENERAL FIELD] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
-    }
-    do {
-        $fieldOfComp = getField();
-        if  (($fieldOfComp ne "Death")&&($fieldOfComp ne "Birth")){
-            print $INVALID_FIELD." User either Death or Birth".$NEW_LINE;
-        }
-    }while (($fieldOfComp ne "Death")&&($fieldOfComp ne "Birth"));
-
-
-    clearScreen();
-
-
     while ($currentYear <= $years[1]) {
         if ($fieldOfComp eq "Death") {
-            $fileName = "Data/Death/".$currentYear."/deaths".$currentYear.".txt";
+            $fileName = "Data/Death/deaths".$currentYear.".txt";
         }
         else {
-            $fileName = "Data/Birth/".$currentYear."/births".$currentYear.".txt"; 
+            $fileName = "Data/Birth/births".$currentYear.".txt"; 
         }
         open my $file_fh, '<', $fileName
             or die "Unable to open names file: $fileName\n";
@@ -537,11 +525,11 @@ sub valComp{
         }
     }
     print $fieldOneComp.": ".$fieldOneTotalValue." ".$fieldTwoComp.": ".$fieldTwoTotalValue.$NEW_LINE;
-    open (my $fh, '>', 'grapher/comp.txt');
+    open (my $fh, '>', "grapher/comp.txt");
     print $fh "\"fieldComp\",\"fieldTotalValue\"\n";
     print $fh $fieldOneComp.",".$fieldOneTotalValue."\n".$fieldTwoComp.",".$fieldTwoTotalValue;
     close $fh;
-    system("perl grapher/plotter.pl grapher/comp.txt grapher/output.pdf");
+    system("perl grapher/plotter.pl grapher/comp.txt grapher/".$fieldOneComp."_vs_".$fieldTwoComp.".output.pdf");
     print "Press enter to see the graph".$NEW_LINE;
     <STDIN>;
     system("gnome-open grapher/output.pdf");
