@@ -109,10 +109,10 @@ sub startUserChoices {
             case 3 {
                 valGet(@years);
             }
+            # case 4 {
+            #     trend(@years);
+            # }
             case 4 {
-                trend(@years);
-            }
-            case 5 {
                 quitProgram();
             }
             else {
@@ -130,8 +130,8 @@ sub printOptions{
     print "1. Value Max/Min [Least/Most] [deaths or [field specific]] in [field specific] between [period]".$NEW_LINE;
     print "2. Value Compare[field specific] or [field specific] has [least/most] occurences in [field specific] in [period]".$NEW_LINE;
     print "3. Value Get [field specific], happenec with [field specific] happened with [field specific]... in [period]".$NEW_LINE;
-    print "4. Trend [field specific] and [field specific] over [period]".$NEW_LINE;
-    print "5. Quit (or type quit)".$NEW_LINE;
+    # print "4. Trend [field specific] and [field specific] over [period]".$NEW_LINE;
+    print "4. Quit (or type quit)".$NEW_LINE;
     return;
 }
 
@@ -313,10 +313,11 @@ sub valMaxMin{
 
     while ($currentYear <= $years[1]) {
         if ($isDeathStats == $TRUE){
-            $fileName = "Data/Death/".$currentYear."/deaths".$currentYear.".txt";
+            $fileName = "Data/Death/deaths".$currentYear.".txt";
+
         }
         else{
-            $fileName = "Data/Birth/".$currentYear."/birth".$currentYear.".txt"; 
+            $fileName = "Data/Birth/birth".$currentYear.".txt"; 
         }
         open my $file_fh, '<', $fileName
             or die "Unable to open names file: $fileName\n";
@@ -337,7 +338,7 @@ sub valMaxMin{
                 $forCount = -1;
                 foreach my $temp (@unique){
                     $forCount++;
-                    if($temp == $master_fields[$statLoc]){
+                    if($temp eq $master_fields[$statLoc]){
                         $actuallyUnique = $FALSE;
                         $uCounter[$forCount]++;
                     }
@@ -360,14 +361,60 @@ sub valMaxMin{
         $xYear++;
     }
     $forCount = 0;
+    my $reqField;
+    my $reqFieldVal = $uCounter[$forCount];
     foreach my $temp (@unique){
-        print $uCounter[$forCount].$NEW_LINE;
+        # print $temp." --- ".$uCounter[$forCount].$NEW_LINE;
+
+        if($mostOf == 1) { #Most
+            if($uCounter[$forCount] >  $reqFieldVal){
+                $reqFieldVal = $uCounter[$forCount];
+                # print "Bam more";
+                $reqField = $temp;
+                # print $temp." --- ".$uCounter[$forCount].$NEW_LINE;
+            }
+        }
+        else { #Less
+            if($uCounter[$forCount] < $reqFieldVal){
+                $reqFieldVal = $uCounter[$forCount];
+                # print "Bam less";
+                $reqField = $temp;
+                # print $temp." --- ".$uCounter[$forCount].$NEW_LINE;
+            }
+        }
+
         $forCount++;
     }
 
-    waitForKey();
+    if($mostOf == 1) { #Most
+        print "The max stat in ".$fieldInp." is:".$NEW_LINE;
+    }
+    else{
+        print "The lowest stat in ".$fieldInp." is:".$NEW_LINE;
+    }
+    print $reqField." at ".$reqFieldVal.$NEW_LINE;
+
     # 
-    #todo
+    #todo graphing
+
+
+    # print $fieldOneComp.": ".$fieldOneTotalValue." ".$fieldTwoComp.": ".$fieldTwoTotalValue.$NEW_LINE;
+    open (my $fh, '>', 'grapher/maxMin.txt');
+    print $fh "\"fieldName\",\"fieldTotalValue\"\n";
+
+    $forCount = 0;
+    foreach my $temp (@unique){
+        print $fh $temp.",".$uCounter[$forCount].$NEW_LINE;
+    }
+
+    close $fh;
+
+    system("perl grapher/plotter.pl grapher/maxMin.txt grapher/output.pdf");
+
+    print "Press enter to see the graph".$NEW_LINE;
+    waitForKey();
+
+
     return;
 
 }
@@ -403,7 +450,7 @@ sub valComp{
     # ask first specific
     clearScreen();
     print "Please select the field for the first block (Refer to user manual)".$NEW_LINE;
-    print "[FIELD ONE] or [FIELD TWO] has [LEAST/ MOST] occurences in [GENERAL FIELD] from ".$years[0]." to ".$years[1].$NEW_LINE.$NEW_LINE;
+    print "[FIELD ONE] or [FIELD TWO] has [LEAST/ MOST] occurences in [Birth/Death] from ".$years[0]." to ".$years[1].$NEW_LINE.$NEW_LINE;
     
     do {
         $fieldOneComp = getField();
@@ -428,7 +475,14 @@ sub valComp{
         }
     } while ($fieldOneLocation != $fieldTwoLocation);
     clearScreen();
-
+    if (substr($fieldOneComp, 0, 1) eq "D")
+    {
+        $fieldOfComp = "Death";
+    }
+    elsif (substr($fieldOneComp, 0, 1) eq "B")
+    {
+        $fieldOfComp = "Birth";
+    }
     print "Are you looking for [M]ost or [L]east?".$NEW_LINE;
     do {
         $maxFlag = lc(readInput());
@@ -442,31 +496,12 @@ sub valComp{
 
 
 
-    print "Please select the field for the last block [All fields are in the user manual]".$NEW_LINE;
-    if ($maxFlag eq "m"){
-        print "[".$fieldOneComp."]"." or [".$fieldTwoComp."] has most occurences in [GENERAL FIELD] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
-    }
-    else
-    {
-        print "[".$fieldOneComp."]"." or [".$fieldTwoComp."] has most occurences in [GENERAL FIELD] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
-    }
-    do {
-        $fieldOfComp = getField();
-        if  (($fieldOfComp ne "Death")&&($fieldOfComp ne "Birth")){
-            print $INVALID_FIELD." User either Death or Birth".$NEW_LINE;
-        }
-    }while (($fieldOfComp ne "Death")&&($fieldOfComp ne "Birth"));
-
-
-    clearScreen();
-
-
     while ($currentYear <= $years[1]) {
         if ($fieldOfComp eq "Death") {
-            $fileName = "Data/Death/".$currentYear."/deaths".$currentYear.".txt";
+            $fileName = "Data/Death/deaths".$currentYear.".txt";
         }
         else {
-            $fileName = "Data/Birth/".$currentYear."/births".$currentYear.".txt"; 
+            $fileName = "Data/Birth/births".$currentYear.".txt"; 
         }
         open my $file_fh, '<', $fileName
             or die "Unable to open names file: $fileName\n";
@@ -537,13 +572,13 @@ sub valComp{
         }
     }
     print $fieldOneComp.": ".$fieldOneTotalValue." ".$fieldTwoComp.": ".$fieldTwoTotalValue.$NEW_LINE;
-    open (my $fh, '>', 'grapher/comp.txt');
+    open (my $fh, '>', "grapher/comp.txt");
     print $fh "\"fieldComp\",\"fieldTotalValue\"\n";
     print $fh $fieldOneComp.",".$fieldOneTotalValue."\n".$fieldTwoComp.",".$fieldTwoTotalValue;
     close $fh;
-    system("perl grapher/plotter.pl grapher/comp.txt grapher/output.pdf");
+    system("perl grapher/plotter.pl grapher/comp.txt grapher/".$fieldOneComp."_vs_".$fieldTwoComp.".output.pdf");
     print "Press enter to see the graph".$NEW_LINE;
-    <STDIN>;
+    waitForKey();
     system("gnome-open grapher/output.pdf");
     return;
 }
