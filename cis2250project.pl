@@ -1110,9 +1110,12 @@ sub openFile{
     my $total = 0;
     my $value = "";
     my $element = "";\
-    my $
 
-    open my $year_fh, '<', "Data/Death/deaths$year.txt"
+    my $year_fh;
+    my $type;
+    my $fileName = "Data/".$type."/".lc($type).$year.".txt";
+
+    open my $year_fh, '<', $fileName
        or die "Unable to open file\n";
 
     my @records = <$year_fh>;
