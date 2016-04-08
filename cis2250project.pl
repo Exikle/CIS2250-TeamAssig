@@ -414,6 +414,8 @@ sub valMaxMin{
     print "Press enter to see the graph".$NEW_LINE;
     waitForKey();
 
+    system("open grapher/output.pdf");
+
 
     return;
 
