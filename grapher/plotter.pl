@@ -16,22 +16,21 @@ if ($#ARGV != 1) {
     $fileName = $ARGV[0];
     $pdfFileName = $ARGV[1];
 }
-
 my $R = Statistics::R->new();
 $R ->run(qq`pdf("$pdfFileName" , paper = "letter")`);
 $R ->run(q`library(ggplot2)`);
 $R ->run(qq`data <- read.csv("$fileName",sep = ",")`);
-    $R->run(q`ggplot(data, aes(x =fieldComp, y=fieldTotalValue)) + geom_bar(stat="identity")`);
 
-if ($fileName eq "comp.txt") {
-    #$R->run(q`ggplot(data, aes(x=fieldOneComp, y=fieldOneTotalValue, fill=fieldOneComp))+ geom_bar(colour="black", stat = identity") + guides(fill = FALSE)`);
+print $fileName;
+if ($fileName eq "grapher/comp.txt") {
+    $R->run(q`ggplot(data, aes(x =fieldComp, y=fieldTotalValue, fill = fieldComp)) + geom_bar(colour = "black", stat="identity") + guides(fill = FALSE) + xlab("Field of comparison") + ylab("Total Number of occurrences") + ggtitle("Comparison of Given fields");`);
 }
 
-elsif ($fileName eq "maxMin.txt") {
+elsif ($fileName eq "grapher/maxMin.txt") {
 
 }
 
-elsif ($fileName eq "getVal") {
+elsif ($fileName eq "grapher/getVal") {
 
 }
 $R->run(q`dev.off()`);
