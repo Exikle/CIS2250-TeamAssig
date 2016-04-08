@@ -21,7 +21,6 @@ $R ->run(qq`pdf("$pdfFileName" , paper = "letter")`);
 $R ->run(q`library(ggplot2)`);
 $R ->run(qq`data <- read.csv("$fileName",sep = ",")`);
 
-print $fileName;
 if ($fileName eq "grapher/comp.txt") {
     $R->run(q`ggplot(data, aes(x =fieldComp, y=fieldTotalValue, fill = fieldComp)) + geom_bar(colour = "black", stat="identity") + guides(fill = FALSE) + xlab("Field of comparison") + ylab("Total Number of occurrences") + ggtitle("Comparison of Given fields");`);
 }
