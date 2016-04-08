@@ -439,10 +439,76 @@ sub getField{
 
 sub valGet{
     my @years = $_[0];
+    my $yearsTotal = $years[1] - $years[0];
+    my @fields;
+    my $fieldCount = 0;
+    my $total = 0;
+    my $continue = $FALSE;
+
     clearScreen();
+    print "Please select the field(s) for the first block [All fields are in user manual]".$NEW_LINE;
+    print "[Field specific] that happened with [Field specific] (no limit to # of field specific) from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
+    do {
+        print "Field specific: ".$NEW_LINE;
+        $fields[fieldCount] = <STDIN>;
+        if (validateField($fieldOneComp) == 1)
+        {
+            $fieldCount++;
+        }
+        else
+        {
+            print "NOT A VALID FIELD".$NEW_LINE;
+        }
+
+        print "Add new field specifc? (y)es or (n)o.".$NEW_LINE;
+
+        if(<STDIN> == "n") {
+            $continue = $TRUE;
+        }
+        
+    } while ($continue == $FALSE);
+
+    }
+
+    for my $i ( 0..$yearsTotal-1 ) {
+        total += openFile($years[0]+$i, @fields, $fieldCount);
+    }
+
     #todo
     return;
 
+}
+
+sub openFile{
+    my $year = $_[0];
+    my @fields = $_[1];
+    my $fieldCount = $_[2];
+    my $record_count = 0;
+    my $total = 0;
+
+    open my $year_fh, '<', "$year".".txt"
+       or die "Unable to open file\n";
+
+    my @records = <$names_fh>;
+
+    close $year_fh or
+       die "Unable to close\n";
+
+    foreach my $year_record ( @records ) {
+       if ( $csv->parse($year_record) ) {
+          my @master_fields = $csv->fields();
+          $record_count++;
+          for my $i ( 0..$fieldCount ){
+            if ($master_fields[] eq $fields[$i]) { #### get this resolved
+                $total++;
+            }
+          }
+       } else {
+          warn "Line/record could not be parsed\n";
+       }
+    }
+
+    return $total;
 }
 
 sub trend{
