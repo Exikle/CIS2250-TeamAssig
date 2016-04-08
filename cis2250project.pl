@@ -379,6 +379,10 @@ sub valComp{
             if ($csv -> parse($file_record)){
                 my @master_fields = $csv->fields();
                 $record_count++;
+                if (($master_fields[$fieldOneLocation] eq "")||($master_fields[$fieldTwoLocation] eq "")) {
+                    print "Data fields chosen are not compatible with years chosen, restart the program to try again".$NEW_LINE;
+                    die;
+                }
                 $fieldOneArray[$record_count] = $master_fields[$fieldOneLocation];
                 $fieldTwoArray[$record_count] = $master_fields[$fieldTwoLocation];
             } else {
