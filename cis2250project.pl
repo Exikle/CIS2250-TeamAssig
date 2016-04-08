@@ -120,8 +120,6 @@ sub printOptions{
     print "2. Value Compare[field specific] or [field specific] has [least/most] occurences in [field specific] in [period]".$NEW_LINE;
     print "3. Value Get [field specific], happenec with [field specific] happened with [field specific]... in [period]".$NEW_LINE;
     print "4. Trend [field specific] and [field specific] over [period]".$NEW_LINE;
-    print "5. Option five".$NEW_LINE;
-    print "6. Option six".$NEW_LINE;
     print "7. Etc".$NEW_LINE;
     return;
 }
@@ -206,12 +204,15 @@ sub clearScreen{
 
 
 
+# Value Max/Min [Least/Most] [deaths or [field specific]] in [field] between [period]
 
+#  bar graph
 sub valMaxMin{
     my @years = $_[0];
     clearScreen();
 
     print "RUN VALMAXMIN";
+    
     #todo
     return;
 }
@@ -282,8 +283,8 @@ sub getFieldValue {
     case "Death:Mod:May" { return(05) }
     case "Death:Mod:June" { return(06) }
     case "Death:Mod:July" { return(07) }
-    case "Death:Mod:August" { return(08) }
-    case "Death:Mod:September" { return(09) }
+    # case "Death:Mod:August" { return(08) }
+    # case "Death:Mod:September" { return(09) }
     case "Death:Mod:October" { return(10) }
     case "Death:Mod:November" { return(11) }
     case "Death:Mod:December" { return(12) }
@@ -307,7 +308,7 @@ sub getFieldValue {
     case "Death:Education03:MasterDegree" { return(7) }
     case "Death:Education03:DoctorateDegree" { return(8) }
     case "Death:Education89:None" { return(00) }
-    case "Death:Education89:1YearHS" { return(09) }
+    # case "Death:Education89:1YearHS" { return(09) }
     case "Death:Education89:2YearHS" { return(10) }
     case "Death:Education89:3YearHS" { return(11) }
     case "Death:Education89:4YearHS" { return(12) }
@@ -549,8 +550,7 @@ sub getField{
 
     do {
         $field = readInput(); 
-        if (validateField($field) == $TRUE)
-        {
+        if (validateField($field) == $TRUE){
             $continue = $TRUE;
         }
         else{
@@ -568,34 +568,35 @@ sub valGet{
     my $total = 0;
     my $continue = $FALSE;
 
+    my $userInput;
+
     clearScreen();
-    print "Please select the field(s) for the first block [All fields are in user manual]".$NEW_LINE;
-    print "[Field specific] that happened with [Field specific] (no limit to # of field specific) from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
-    do {
-        print "Field specific: ".$NEW_LINE;
-        $fields[fieldCount] = <STDIN>;
-        if (validateField($fieldOneComp) == 1)
-        {
-            $fieldCount++;
-        }
-        else
-        {
-            print "NOT A VALID FIELD".$NEW_LINE;
-        }
 
-        print "Add new field specifc? (y)es or (n)o.".$NEW_LINE;
+    # print "Please select the field(s) for the first block [All fields are in user manual]".$NEW_LINE;
+    # print "[Field specific] that happened with [Field specific] (no limit to # of field specific) from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
+    # do {
+    #     print "Field specific: ".$NEW_LINE;
+    #     $userInput = readInput();
 
-        if(<STDIN> == "n") {
-            $continue = $TRUE;
-        }
+    #     $fields[fieldCount] = $userInput;
+    #     if (validateField($fieldOneComp) == $TRUE){
+    #         $fieldCount++;
+    #     }
+    #     else{$
+    #         print $INVALID_FIELD.$NEW_LINE;
+    #     }
+
+    #     print "Add new field specifc? (y)es or (n)o.".$NEW_LINE;
+    #     userInput = readInput();
+    #     if(userInput == "n") {
+    #         $continue = $TRUE;
+    #     }
         
-    } while ($continue == $FALSE);
+    # } while ($continue == $FALSE);
 
-    }
-
-    for my $i ( 0..$yearsTotal-1 ) {
-        total += openFile($years[0]+$i, @fields, $fieldCount);
-    }
+    # for my $i ( 0..$yearsTotal-1 ) {
+    #     total += openFile($years[0]+$i, @fields, $fieldCount);
+    # }
 
     #todo
     return;
@@ -608,36 +609,40 @@ sub openFile{
     my $record_count = 0;
     my $total = 0;
 
-    open my $year_fh, '<', "$year".".txt"
-       or die "Unable to open file\n";
+    # open my $year_fh, '<', "$year".".txt"
+    #    or die "Unable to open file\n";
 
-    my @records = <$names_fh>;
+    # my @records = <$names_fh>;
 
-    close $year_fh or
-       die "Unable to close\n";
+    # close $year_fh or
+    #    die "Unable to close\n";
 
-    foreach my $year_record ( @records ) {
-       if ( $csv->parse($year_record) ) {
-          my @master_fields = $csv->fields();
-          $record_count++;
-          for my $i ( 0..$fieldCount ){
-            if ($master_fields[] eq $fields[$i]) { #### get this resolved
-                $total++;
-            }
-          }
-       } else {
-          warn "Line/record could not be parsed\n";
-       }
-    }
+    # foreach my $year_record ( @records ) {
+    #    if ( $csv->parse($year_record) ) {
+    #       my @master_fields = $csv->fields();
+    #       $record_count++;
+    #       for my $i ( 0..$fieldCount ){
+    #         if ($master_fields[] eq $fields[$i]) { #### get this resolved
+    #             $total++;
+    #         }
+    #       }
+    #    }
+    #    else {
+    #       warn "Line/record could not be parsed\n";
+    #    }
+    # }
 
     return $total;
 }
 
 sub trend{
-    my @years = $_[0];
+    # my @years = $_[0];
+
     clearScreen();
+    
+    print "running trends code.";
     #todo
-    return;
+    return 
 }
 
 sub readInput{
