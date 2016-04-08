@@ -414,13 +414,13 @@ sub valComp{
     print "Are you looking for [M]ost or [L]east?".$NEW_LINE;
     do {
         $maxFlag = lc(readInput());
-        if (($maxFlag != "m")&&($maxFlag != "l")) {
+        if (($maxFlag ne "m")&&($maxFlag ne "l")) {
             print $INVALID_FIELD.$NEW_LINE;
         }
-    } while (($maxFlag != "M")&&($maxFlag != "m")&&($maxFlag != "l")&&($maxFlag != "L"));
+    } while (($maxFlag ne "M")&&($maxFlag ne "m")&&($maxFlag ne "l")&&($maxFlag ne "L"));
 
     print "Please select the field for the last block [All fields are in the user manual]".$NEW_LINE;
-    if ($maxFlag == "m"){
+    if ($maxFlag eq "m"){
         print "[".$fieldOneComp."]"." or [".$fieldTwoComp."] has most occurences in [GENERAL FIELD] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
     }
     else
@@ -429,18 +429,17 @@ sub valComp{
     }
     do {
         $fieldOfComp = getField();
-        if  (($fieldOfComp != "Death:TotalNumber")||($fieldOfComp != "Birth:TotalNumber")){
+        if  (($fieldOfComp ne "Death:TotalNumber")&&($fieldOfComp ne "Birth:TotalNumber")){
             print $INVALID_FIELD." User either Death:TotalNumber or Birth:TotalNumber".$NEW_LINE;
         }
-    }while (($fieldOfComp != "Death:TotalNumber")||($fieldOfComp != "Birth:TotalNumber"));
-
+    }while (($fieldOfComp ne "Death:TotalNumber")&&($fieldOfComp ne "Birth:TotalNumber"));
     clearScreen();
     while ($currentYear <= $years[1]) {
-        if ($fieldOfComp == "Death:TotalNumber") {
+        if ($fieldOfComp eq "Death:TotalNumber") {
             $fileName = "Data/Death/".$currentYear."/deaths".$currentYear.".txt";
         }
         else {
-            $fileName = "Data/Birth/".$currentYear."/birth".$currentYear.".txt"; 
+            $fileName = "Data/Birth/".$currentYear."/births".$currentYear.".txt"; 
         }
         open my $file_fh, '<', $fileName
             or die "Unable to open names file: $fileName\n";
@@ -451,8 +450,10 @@ sub valComp{
             if ($csv -> parse($file_record)){
                 my @master_fields = $csv->fields();
                 $record_count++;
-                clearScreen();
-                print $record_count;
+                if (($master_fields[$fieldOneLocation] eq "")||($master_fields[$fieldTwoLocation] eq "")) {
+                    print "Data fields chosen are not compatible with years chosen, restart the program to try again".$NEW_LINE;
+                    die;
+                }
                 $fieldOneArray[$record_count] = $master_fields[$fieldOneLocation];
                 $fieldTwoArray[$record_count] = $master_fields[$fieldTwoLocation];
             } else {
@@ -460,19 +461,19 @@ sub valComp{
             }
         }
         for my $i (0..$record_count) {
-            print $i.$NEW_LINE;
-            if ($fieldOneArray[$record_count] == $fieldOneCompValue)
+            if ($fieldOneArray[$i] == $fieldOneCompValue)
             {
                 $fieldOneTotalValue++;
             }
-            elsif ($fieldTwoArray[$record_count] == $fieldTwoCompValue)
+            if ($fieldTwoArray[$i] == $fieldTwoCompValue)
             {
                 $fieldTwoTotalValue++;
             }
         }
         
+        $currentYear++;
     }
-    print $fieldOneTotalValue."     ".$fieldTwoTotalValue;
+    print $fieldOneTotalValue."                  ".$fieldTwoTotalValue;
     <STDIN>;
     return;
 }
@@ -480,270 +481,270 @@ sub valComp{
 sub getFieldLocation {
     my $field = $_[0];
     switch($field) {
-    case "Death:MoD" { return(1) }
-    case "Death:DoW" { return(2) }
-    case "Death:Age" { return(3) }
-    case "Death:Sex" { return(4) }
-    case "Death:Race" { return(5) }
-    case "Death:MaritalStatus" { return(6) }
-    case "Death:Education03" { return(8) }
-    case "Death:Education89" { return(7) }
-    case "Death:ResidentStatus" { return(9) }
-    case "Death:PoD" { return(10) }
-    case "Death:Injury" { return(11) }
-    case "Death:MethodOfDisposition" { return(13) }
-    case "Death:Autopsy" { return(14) }
-    case "Death:ICD" { return(15) }
-    case "Death:Sex:Male" { return(4) }
-    case "Death:Sex:Female" { return(4) }
-    case "Death:ResidentStatus:Resident" { return(9) }
-    case "Death:ResidentStatus:ForeignResident" { return(9) }
-    case "Death:MoD:January" { return(1) }
-    case "Death:MoD:February" { return(1) }
-    case "Death:MoD:March" { return(1) }
-    case "Death:MoD:April" { return(1) }
-    case "Death:MoD:May" { return(1) }
-    case "Death:MoD:June" { return(1) }
-    case "Death:MoD:July" { return(1) }
-    case "Death:MoD:August" { return(1) }
-    case "Death:MoD:September" { return(1) }
-    case "Death:MoD:October" { return(1) }
-    case "Death:MoD:November" { return(1) }
-    case "Death:MoD:December" { return(1) }
-    case "Death:DoW:Monday" { return(2) }
-    case "Death:DoW:Tuesday" { return(2) }
-    case "Death:DoW:Wednesday" { return(2) }
-    case "Death:DoW:Thursday" { return(2) }
-    case "Death:DoW:Friday" { return(2) }
-    case "Death:DoW:Saturday" { return(2) }
-    case "Death:DoW:Sunday" { return(2) }
-    case "Death:MaritalStatus:Single" { return(6) }
-    case "Death:MaritalStatus:Married" { return(6) }
-    case "Death:MaritalStatus:Widowed" { return(6) }
-    case "Death:MaritalStatus:Divorced" { return(6) }
-    case "Death:Education03:8thOrLess" { return(8) }
-    case "Death:Education03:9TO12Drop" { return(8) }
-    case "Death:Education03:HSgrad" { return(8) }
-    case "Death:Education03:CollegeNoDegree" { return(8) }
-    case "Death:Education03:AssociateDegree" { return(8) }
-    case "Death:Education03:BachelorDegree" { return(8) }
-    case "Death:Education03:MasterDegree" { return(8) }
-    case "Death:Education03:DoctorateDegree" { return(8) }
-    case "Death:Education89:None" { return(7) }
-    case "Death:Education89:1YearHS" { return(7) }
-    case "Death:Education89:2YearHS" { return(7) }
-    case "Death:Education89:3YearHS" { return(7) }
-    case "Death:Education89:4YearHS" { return(7) }
-    case "Death:Education89:1YearCollege" { return(7) }
-    case "Death:Education89:2YearCollege" { return(7) }
-    case "Death:Education89:3YearCollege" { return(7) }
-    case "Death:Education89:4YearCollege" { return(7) }
-    case "Death:Education89:5MoreYearCollege" { return(7) }
-    case "Death:MethodOfDispositon:Burial" { return(13) }
-    case "Death:MethodOfDispositon:Cremation" { return(13) }
-    case "Death:MethodOfDispositon:Other" { return(13) }
-    case "Death:MethodOfDispositon:Unkown" { return(13) }
-    case "Death:MannerOfDeath:Accident" { return(12) }
-    case "Death:MannerOfDeath:Suicide" { return(12) }
-    case "Death:MannerOfDeath:Homocide" { return(12) }
-    case "Death:MannerOfDeath:PendingInvestigation" { return(12) }
-    case "Death:MannerOfDeath:SelfInflicted" { return(12) }
-    case "Death:MannerOfDeath:Natural" { return(12) }
-    case "Death:MannerOfDeath:NotSpecified" { return(12) }
-    case "Death:PoD:Home" { return(10) }
-    case "Death:PoD:School" { return(10) }
-    case "Death:PoD:AthleticsArea" { return(10) }
-    case "Death:PoD:Street" { return(10) }
-    case "Death:PoD:Industrial" { return(10) }
-    case "Death:PoD:Farm" { return(10) }
-    case "Death:Age:Years" { return(3) }
-    case "Death:Race:White" { return(5) }
-    case "Death:Race:Black" { return(5) }
-    case "Death:Race:AmericanIndian" { return(5) }
-    case "Death:Race:Chinese" { return(5) }
-    case "Death:Race:Japanese" { return(5) }
-    case "Death:Race:Hawaiian" { return(5) }
-    case "Death:Race:Filipino" { return(5) }
-    case "Death:Race:AsianIndian" { return(5) }
-    case "Death:Race:Korean" { return(5) }
-    case "Death:Race:Samoan" { return(5) }
-    case "Death:Race:Vietnamese" { return(5) }
-    case "Death:Race:Guamanian" { return(5) }
-    case "Birth:Child:Sex" { return(9) }
-    case "Birth:Child:Birthweight" { return(10) }
-    case "Birth:Child:TimeOfBirth" { return(4) }
-    case "Birth:Child:Month" { return(3) }
-    case "Birth:Child:DoW" { return(5) }
-    case "Birth:Mom:Age" { return(12) }
-    case "Birth:Mom:Race" { return(13) }
-    case "Birth:Mom:MaritalStatus" { return(14) }
-    case "Birth:Mom:Education" { return(15) }
-    case "Birth:TotalBirthOrder" { return(16) }
-    case "Birth:BirthInterval" { return(17) }
-    case "Birth:Father:Age" { return(18) }
-    case "Birth:Father:Race" { return(19) }
-    case "Birth:Father:Education" { return(20) }
-    case "Birth:MethodOfDelivery" { return(7) }
-    case "Birth:Child:Number" { return(11) }
-    case "Birth:Attendant" { return(8) }
-    case "Birth:PlaceOfDelivery" { return(6) }
-    case "Birth:Child:Male" { return(9) }
-    case "Birth:Child:Female" { return(9) }
-    case "Birth:DoW:Monday" { return(5) }
-    case "Birth:DoW:Tuesday" { return(5) }
-    case "Birth:DoW:Wednesday" { return(5) }
-    case "Birth:DoW:Thursday" { return(5) }
-    case "Birth:DoW:Friday" { return(5) }
-    case "Birth:DoW:Saturday" { return(5) }
-    case "Birth:DoW:Sunday" { return(5) }
-    case "Birth:PlaceOfDelivery:Hospital" { return(6) }
-    case "Birth:PlaceOfDelivery:FreeStandingBirthCenter" { return(6) }
-    case "Birth:PlaceOfDelivery:HomeIntended" { return(6) }
-    case "Birth:Mom:Race:White" { return(13) }
-    case "Birth:Mom:Race:Black" { return(13) }
-    case "Birth:Mom:Race:AIAN" { return(13) }
-    case "Birth:Mom:Race:Asian" { return(13) }
-    case "Birth:Mom:Race:NHOPI" { return(13) }
-    case "Birth:Mom:MaritalStatus:Married" { return(14) }
-    case "Birth:Mom:MaritalStatus:Unmarried" { return(14) }
-    case "Birth:Mom:Education:8thOrElse" { return(15) }
-    case "Birth:Mom:Education:9TO12Drop" { return(15) }
-    case "Birth:Mom:Education:HSgrad" { return(15) }
-    case "Birth:Mom:Education:SomeCollege" { return(15) }
-    case "Birth:Mom:Education:BachelorDegree" { return(15) }
-    case "Birth:Mom:Education:MasterDegree" { return(15) }
-    case "Birth:Mom:Education:Doctorate" { return(15) }
-    case "Birth:Father:Race:White" { return(18) }
-    case "Birth:Father:Race:Black" { return(18) }
-    case "Birth:Father:Race:AIAN" { return(18) }
-    case "Birth:Father:Race:Asian" { return(18) }
-    case "Birth:Father:Race:NHOPI" { return(18) }
-    case "Birth:Father:Education:8thOrElse" { return(20) }
-    case "Birth:Father:Education:9TO12Drop" { return(20) }
-    case "Birth:Father:Education:HSgrad" { return(20) }
-    case "Birth:Father:Education:SomeCollege" { return(20) }
-    case "Birth:Father:Education:BachelorDegree" { return(20) }
-    case "Birth:Father:Education:MasterDegree" { return(20) }
-    case "Birth:Father:Education:Doctorate" { return(20) }
+        case "Death:MoD" { return(1) }
+        case "Death:DoW" { return(2) }
+        case "Death:Age" { return(3) }
+        case "Death:Sex" { return(4) }
+        case "Death:Race" { return(5) }
+        case "Death:MaritalStatus" { return(6) }
+        case "Death:Education03" { return(8) }
+        case "Death:Education89" { return(7) }
+        case "Death:ResidentStatus" { return(9) }
+        case "Death:PoD" { return(10) }
+        case "Death:Injury" { return(11) }
+        case "Death:MethodOfDisposition" { return(13) }
+        case "Death:Autopsy" { return(14) }
+        case "Death:ICD" { return(15) }
+        case "Death:Sex:Male" { return(4) }
+        case "Death:Sex:Female" { return(4) }
+        case "Death:ResidentStatus:Resident" { return(9) }
+        case "Death:ResidentStatus:ForeignResident" { return(9) }
+        case "Death:MoD:January" { return(1) }
+        case "Death:MoD:February" { return(1) }
+        case "Death:MoD:March" { return(1) }
+        case "Death:MoD:April" { return(1) }
+        case "Death:MoD:May" { return(1) }
+        case "Death:MoD:June" { return(1) }
+        case "Death:MoD:July" { return(1) }
+        case "Death:MoD:August" { return(1) }
+        case "Death:MoD:September" { return(1) }
+        case "Death:MoD:October" { return(1) }
+        case "Death:MoD:November" { return(1) }
+        case "Death:MoD:December" { return(1) }
+        case "Death:DoW:Monday" { return(2) }
+        case "Death:DoW:Tuesday" { return(2) }
+        case "Death:DoW:Wednesday" { return(2) }
+        case "Death:DoW:Thursday" { return(2) }
+        case "Death:DoW:Friday" { return(2) }
+        case "Death:DoW:Saturday" { return(2) }
+        case "Death:DoW:Sunday" { return(2) }
+        case "Death:MaritalStatus:Single" { return(6) }
+        case "Death:MaritalStatus:Married" { return(6) }
+        case "Death:MaritalStatus:Widowed" { return(6) }
+        case "Death:MaritalStatus:Divorced" { return(6) }
+        case "Death:Education03:8thOrLess" { return(8) }
+        case "Death:Education03:9TO12Drop" { return(8) }
+        case "Death:Education03:HSgrad" { return(8) }
+        case "Death:Education03:CollegeNoDegree" { return(8) }
+        case "Death:Education03:AssociateDegree" { return(8) }
+        case "Death:Education03:BachelorDegree" { return(8) }
+        case "Death:Education03:MasterDegree" { return(8) }
+        case "Death:Education03:DoctorateDegree" { return(8) }
+        case "Death:Education89:None" { return(7) }
+        case "Death:Education89:1YearHS" { return(7) }
+        case "Death:Education89:2YearHS" { return(7) }
+        case "Death:Education89:3YearHS" { return(7) }
+        case "Death:Education89:4YearHS" { return(7) }
+        case "Death:Education89:1YearCollege" { return(7) }
+        case "Death:Education89:2YearCollege" { return(7) }
+        case "Death:Education89:3YearCollege" { return(7) }
+        case "Death:Education89:4YearCollege" { return(7) }
+        case "Death:Education89:5MoreYearCollege" { return(7) }
+        case "Death:MethodOfDispositon:Burial" { return(13) }
+        case "Death:MethodOfDispositon:Cremation" { return(13) }
+        case "Death:MethodOfDispositon:Other" { return(13) }
+        case "Death:MethodOfDispositon:Unkown" { return(13) }
+        case "Death:MannerOfDeath:Accident" { return(12) }
+        case "Death:MannerOfDeath:Suicide" { return(12) }
+        case "Death:MannerOfDeath:Homocide" { return(12) }
+        case "Death:MannerOfDeath:PendingInvestigation" { return(12) }
+        case "Death:MannerOfDeath:SelfInflicted" { return(12) }
+        case "Death:MannerOfDeath:Natural" { return(12) }
+        case "Death:MannerOfDeath:NotSpecified" { return(12) }
+        case "Death:PoD:Home" { return(10) }
+        case "Death:PoD:School" { return(10) }
+        case "Death:PoD:AthleticsArea" { return(10) }
+        case "Death:PoD:Street" { return(10) }
+        case "Death:PoD:Industrial" { return(10) }
+        case "Death:PoD:Farm" { return(10) }
+        case "Death:Age:Years" { return(3) }
+        case "Death:Race:White" { return(5) }
+        case "Death:Race:Black" { return(5) }
+        case "Death:Race:AmericanIndian" { return(5) }
+        case "Death:Race:Chinese" { return(5) }
+        case "Death:Race:Japanese" { return(5) }
+        case "Death:Race:Hawaiian" { return(5) }
+        case "Death:Race:Filipino" { return(5) }
+        case "Death:Race:AsianIndian" { return(5) }
+        case "Death:Race:Korean" { return(5) }
+        case "Death:Race:Samoan" { return(5) }
+        case "Death:Race:Vietnamese" { return(5) }
+        case "Death:Race:Guamanian" { return(5) }
+        case "Birth:Child:Sex" { return(9) }
+        case "Birth:Child:Birthweight" { return(10) }
+        case "Birth:Child:TimeOfBirth" { return(4) }
+        case "Birth:Child:Month" { return(3) }
+        case "Birth:Child:DoW" { return(5) }
+        case "Birth:Mom:Age" { return(12) }
+        case "Birth:Mom:Race" { return(13) }
+        case "Birth:Mom:MaritalStatus" { return(14) }
+        case "Birth:Mom:Education" { return(15) }
+        case "Birth:TotalBirthOrder" { return(16) }
+        case "Birth:BirthInterval" { return(17) }
+        case "Birth:Father:Age" { return(18) }
+        case "Birth:Father:Race" { return(19) }
+        case "Birth:Father:Education" { return(20) }
+        case "Birth:MethodOfDelivery" { return(7) }
+        case "Birth:Child:Number" { return(11) }
+        case "Birth:Attendant" { return(8) }
+        case "Birth:PlaceOfDelivery" { return(6) }
+        case "Birth:Child:Male" { return(9) }
+        case "Birth:Child:Female" { return(9) }
+        case "Birth:DoW:Monday" { return(5) }
+        case "Birth:DoW:Tuesday" { return(5) }
+        case "Birth:DoW:Wednesday" { return(5) }
+        case "Birth:DoW:Thursday" { return(5) }
+        case "Birth:DoW:Friday" { return(5) }
+        case "Birth:DoW:Saturday" { return(5) }
+        case "Birth:DoW:Sunday" { return(5) }
+        case "Birth:PlaceOfDelivery:Hospital" { return(6) }
+        case "Birth:PlaceOfDelivery:FreeStandingBirthCenter" { return(6) }
+        case "Birth:PlaceOfDelivery:HomeIntended" { return(6) }
+        case "Birth:Mom:Race:White" { return(13) }
+        case "Birth:Mom:Race:Black" { return(13) }
+        case "Birth:Mom:Race:AIAN" { return(13) }
+        case "Birth:Mom:Race:Asian" { return(13) }
+        case "Birth:Mom:Race:NHOPI" { return(13) }
+        case "Birth:Mom:MaritalStatus:Married" { return(14) }
+        case "Birth:Mom:MaritalStatus:Unmarried" { return(14) }
+        case "Birth:Mom:Education:8thOrElse" { return(15) }
+        case "Birth:Mom:Education:9TO12Drop" { return(15) }
+        case "Birth:Mom:Education:HSgrad" { return(15) }
+        case "Birth:Mom:Education:SomeCollege" { return(15) }
+        case "Birth:Mom:Education:BachelorDegree" { return(15) }
+        case "Birth:Mom:Education:MasterDegree" { return(15) }
+        case "Birth:Mom:Education:Doctorate" { return(15) }
+        case "Birth:Father:Race:White" { return(18) }
+        case "Birth:Father:Race:Black" { return(18) }
+        case "Birth:Father:Race:AIAN" { return(18) }
+        case "Birth:Father:Race:Asian" { return(18) }
+        case "Birth:Father:Race:NHOPI" { return(18) }
+        case "Birth:Father:Education:8thOrElse" { return(20) }
+        case "Birth:Father:Education:9TO12Drop" { return(20) }
+        case "Birth:Father:Education:HSgrad" { return(20) }
+        case "Birth:Father:Education:SomeCollege" { return(20) }
+        case "Birth:Father:Education:BachelorDegree" { return(20) }
+        case "Birth:Father:Education:MasterDegree" { return(20) }
+        case "Birth:Father:Education:Doctorate" { return(20) }
     }
 }
 
 sub getFieldValue {
     my $field = $_[0];
     switch($field) {
-    case "Death:Sex:Male" { return(1) }
-    case "Death:Sex:Female" { return(2) }
-    case "Death:ResidentStatus:Resident" { return(1) }
-    case "Death:ResidentStatus:ForeignResident" { return(4) }
-    case "Death:MoD:January" { return(01) }
-    case "Death:MoD:February" { return(02) }
-    case "Death:MoD:March" { return(03) }
-    case "Death:MoD:April" { return(04) }
-    case "Death:MoD:May" { return(05) }
-    case "Death:MoD:June" { return(06) }
-    case "Death:MoD:July" { return(07) }
-    case "Death:MoD:August" { return("08") }
-    case "Death:MoD:September" { return("09") }
-    case "Death:MoD:October" { return(10) }
-    case "Death:MoD:November" { return(11) }
-    case "Death:MoD:December" { return(12) }
-    case "Death:DoW:Monday" { return(2) }
-    case "Death:DoW:Tuesday" { return(3) }
-    case "Death:DoW:Wednesday" { return(4) }
-    case "Death:DoW:Thursday" { return(5) }
-    case "Death:DoW:Friday" { return(6) }
-    case "Death:DoW:Saturday" { return(7) }
-    case "Death:DoW:Sunday" { return(1) }
-    case "Death:MaritalStatus:Single" { return(1) }
-    case "Death:MaritalStatus:Married" { return(1) }
-    case "Death:MaritalStatus:Widowed" { return(1) }
-    case "Death:MaritalStatus:Divorced" { return(1) }
-    case "Death:Education03:8thOrLess" { return(1) }
-    case "Death:Education03:9TO12Drop" { return(2) }
-    case "Death:Education03:HSgrad" { return(3) }
-    case "Death:Education03:CollegeNoDegree" { return(4) }
-    case "Death:Education03:AssociateDegree" { return(5) }
-    case "Death:Education03:BachelorDegree" { return(6) }
-    case "Death:Education03:MasterDegree" { return(7) }
-    case "Death:Education03:DoctorateDegree" { return(8) }
-    case "Death:Education89:None" { return(00) }
-    case "Death:Education89:1YearHS" { return("09") }
-    case "Death:Education89:2YearHS" { return(10) }
-    case "Death:Education89:3YearHS" { return(11) }
-    case "Death:Education89:4YearHS" { return(12) }
-    case "Death:Education89:1YearCollege" { return(13) }
-    case "Death:Education89:2YearCollege" { return(14) }
-    case "Death:Education89:3YearCollege" { return(15) }
-    case "Death:Education89:4YearCollege" { return(16) }
-    case "Death:Education89:5MoreYearCollege" { return(17) }
-    case "Death:MethodOfDispositon:Burial" { return("B") }
-    case "Death:MethodOfDispositon:Cremation" { return("C") }
-    case "Death:MethodOfDispositon:Other" { return("O") }
-    case "Death:MethodOfDispositon:Unkown" { return("U") }
-    case "Death:MannerOfDeath:Accident" { return(1) }
-    case "Death:MannerOfDeath:Suicide" { return(2) }
-    case "Death:MannerOfDeath:Homocide" { return(3) }
-    case "Death:MannerOfDeath:PendingInvestigation" { return(4) }
-    case "Death:MannerOfDeath:SelfInflicted" { return(6) }
-    case "Death:MannerOfDeath:Natural" { return(7) }
-    case "Death:MannerOfDeath:NotSpecified" { return() }
-    case "Death:PoD:HospitalInpatient" { return(1) }
-    case "Death:PoD:HospitalOutpatient" { return(2) }
-    case "Death:PoD:HospitalDeadOnArrival" { return(3) }
-    case "Death:PoD:Home" { return(4) }
-    case "Death:PoD:HospiceFacility" { return(5) }
-    case "Death:PoD:NursingHome" { return(6) }
-    case "Death:Age:Years" { return(1) }
-    case "Death:Race:White" { return(01) }
-    case "Death:Race:Black" { return(02) }
-    case "Death:Race:AmericanIndian" { return(03) }
-    case "Death:Race:Chinese" { return(04) }
-    case "Death:Race:Japanese" { return(05) }
-    case "Death:Race:Hawaiian" { return(06) }
-    case "Death:Race:Filipino" { return(07) }
-    case "Death:Race:AsianIndian" { return(18) }
-    case "Death:Race:Korean" { return(28) }
-    case "Death:Race:Samoan" { return(38) }
-    case "Death:Race:Vietnamese" { return(48) }
-    case "Death:Race:Guamanian" { return(58) }
-    case "Birth:Child:Sex:Male" { return("M") }
-    case "Birth:Child:Sex:Female" { return("F") }
-    case "Birth:DoW:Monday" { return(2) }
-    case "Birth:DoW:Tuesday" { return(3) }
-    case "Birth:DoW:Wednesday" { return(4) }
-    case "Birth:DoW:Thursday" { return(5) }
-    case "Birth:DoW:Friday" { return(6) }
-    case "Birth:DoW:Saturday" { return(7) }
-    case "Birth:DoW:Sunday" { return(1) }
-    case "Birth:PlaceOfDelivery:Hospital" { return(1) }
-    case "Birth:PlaceOfDelivery:FreeStandingBirthCenter" { return(2) }
-    case "Birth:PlaceOfDelivery:HomeIntended" { return(3) }
-    case "Birth:Mom:Race:White" { return(1) }
-    case "Birth:Mom:Race:Black" { return(2) }
-    case "Birth:Mom:Race:AIAN" { return(3) }
-    case "Birth:Mom:Race:Asian" { return(4) }
-    case "Birth:Mom:Race:NHOPI" { return(5) }
-    case "Birth:Mom:MaritalStatus:Married" { return(1) }
-    case "Birth:Mom:MaritalStatus:Unmarried" { return(2) }
-    case "Birth:Mom:Education:8thOrElse" { return(1) }
-    case "Birth:Mom:Education:9TO12Drop" { return(2) }
-    case "Birth:Mom:Education:HSgrad" { return(3) }
-    case "Birth:Mom:Education:SomeCollege" { return(4) }
-    case "Birth:Mom:Education:BachelorDegree" { return(6) }
-    case "Birth:Mom:Education:MasterDegree" { return(7) }
-    case "Birth:Mom:Education:Doctorate" { return(8) }
-    case "Birth:Father:Race:White" { return(1) }
-    case "Birth:Father:Race:Black" { return(2) }
-    case "Birth:Father:Race:AIAN" { return(3) }
-    case "Birth:Father:Race:Asian" { return(4) }
-    case "Birth:Father:Race:NHOPI" { return(5) }
-    case "Birth:Father:Education:8thOrElse" { return(1) }
-    case "Birth:Father:Education:9TO12Drop" { return(2) }
-    case "Birth:Father:Education:HSgrad" { return(3) }
-    case "Birth:Father:Education:SomeCollege" { return(4) }
-    case "Birth:Father:Education:BachelorDegree" { return(6) }
-    case "Birth:Father:Education:MasterDegree" { return(7) }
-    case "Birth:Father:Education:Doctorate" { return(8) }
+        case "Death:Sex:Male" { return(1) }
+        case "Death:Sex:Female" { return(2) }
+        case "Death:ResidentStatus:Resident" { return(1) }
+        case "Death:ResidentStatus:ForeignResident" { return(4) }
+        case "Death:MoD:January" { return(01) }
+        case "Death:MoD:February" { return(02) }
+        case "Death:MoD:March" { return(03) }
+        case "Death:MoD:April" { return(04) }
+        case "Death:MoD:May" { return(05) }
+        case "Death:MoD:June" { return(06) }
+        case "Death:MoD:July" { return(07) }
+        case "Death:MoD:August" { return("08") }
+        case "Death:MoD:September" { return("09") }
+        case "Death:MoD:October" { return(10) }
+        case "Death:MoD:November" { return(11) }
+        case "Death:MoD:December" { return(12) }
+        case "Death:DoW:Monday" { return(2) }
+        case "Death:DoW:Tuesday" { return(3) }
+        case "Death:DoW:Wednesday" { return(4) }
+        case "Death:DoW:Thursday" { return(5) }
+        case "Death:DoW:Friday" { return(6) }
+        case "Death:DoW:Saturday" { return(7) }
+        case "Death:DoW:Sunday" { return(1) }
+        case "Death:MaritalStatus:Single" { return(1) }
+        case "Death:MaritalStatus:Married" { return(1) }
+        case "Death:MaritalStatus:Widowed" { return(1) }
+        case "Death:MaritalStatus:Divorced" { return(1) }
+        case "Death:Education03:8thOrLess" { return(1) }
+        case "Death:Education03:9TO12Drop" { return(2) }
+        case "Death:Education03:HSgrad" { return(3) }
+        case "Death:Education03:CollegeNoDegree" { return(4) }
+        case "Death:Education03:AssociateDegree" { return(5) }
+        case "Death:Education03:BachelorDegree" { return(6) }
+        case "Death:Education03:MasterDegree" { return(7) }
+        case "Death:Education03:DoctorateDegree" { return(8) }
+        case "Death:Education89:None" { return(00) }
+        case "Death:Education89:1YearHS" { return("09") }
+        case "Death:Education89:2YearHS" { return(10) }
+        case "Death:Education89:3YearHS" { return(11) }
+        case "Death:Education89:4YearHS" { return(12) }
+        case "Death:Education89:1YearCollege" { return(13) }
+        case "Death:Education89:2YearCollege" { return(14) }
+        case "Death:Education89:3YearCollege" { return(15) }
+        case "Death:Education89:4YearCollege" { return(16) }
+        case "Death:Education89:5MoreYearCollege" { return(17) }
+        case "Death:MethodOfDispositon:Burial" { return("B") }
+        case "Death:MethodOfDispositon:Cremation" { return("C") }
+        case "Death:MethodOfDispositon:Other" { return("O") }
+        case "Death:MethodOfDispositon:Unkown" { return("U") }
+        case "Death:MannerOfDeath:Accident" { return(1) }
+        case "Death:MannerOfDeath:Suicide" { return(2) }
+        case "Death:MannerOfDeath:Homocide" { return(3) }
+        case "Death:MannerOfDeath:PendingInvestigation" { return(4) }
+        case "Death:MannerOfDeath:SelfInflicted" { return(6) }
+        case "Death:MannerOfDeath:Natural" { return(7) }
+        case "Death:MannerOfDeath:NotSpecified" { return() }
+        case "Death:PoD:HospitalInpatient" { return(1) }
+        case "Death:PoD:HospitalOutpatient" { return(2) }
+        case "Death:PoD:HospitalDeadOnArrival" { return(3) }
+        case "Death:PoD:Home" { return(4) }
+        case "Death:PoD:HospiceFacility" { return(5) }
+        case "Death:PoD:NursingHome" { return(6) }
+        case "Death:Age:Years" { return(1) }
+        case "Death:Race:White" { return(01) }
+        case "Death:Race:Black" { return(02) }
+        case "Death:Race:AmericanIndian" { return(03) }
+        case "Death:Race:Chinese" { return(04) }
+        case "Death:Race:Japanese" { return(05) }
+        case "Death:Race:Hawaiian" { return(06) }
+        case "Death:Race:Filipino" { return(07) }
+        case "Death:Race:AsianIndian" { return(18) }
+        case "Death:Race:Korean" { return(28) }
+        case "Death:Race:Samoan" { return(38) }
+        case "Death:Race:Vietnamese" { return(48) }
+        case "Death:Race:Guamanian" { return(58) }
+        case "Birth:Child:Sex:Male" { return("M") }
+        case "Birth:Child:Sex:Female" { return("F") }
+        case "Birth:DoW:Monday" { return(2) }
+        case "Birth:DoW:Tuesday" { return(3) }
+        case "Birth:DoW:Wednesday" { return(4) }
+        case "Birth:DoW:Thursday" { return(5) }
+        case "Birth:DoW:Friday" { return(6) }
+        case "Birth:DoW:Saturday" { return(7) }
+        case "Birth:DoW:Sunday" { return(1) }
+        case "Birth:PlaceOfDelivery:Hospital" { return(1) }
+        case "Birth:PlaceOfDelivery:FreeStandingBirthCenter" { return(2) }
+        case "Birth:PlaceOfDelivery:HomeIntended" { return(3) }
+        case "Birth:Mom:Race:White" { return(1) }
+        case "Birth:Mom:Race:Black" { return(2) }
+        case "Birth:Mom:Race:AIAN" { return(3) }
+        case "Birth:Mom:Race:Asian" { return(4) }
+        case "Birth:Mom:Race:NHOPI" { return(5) }
+        case "Birth:Mom:MaritalStatus:Married" { return(1) }
+        case "Birth:Mom:MaritalStatus:Unmarried" { return(2) }
+        case "Birth:Mom:Education:8thOrElse" { return(1) }
+        case "Birth:Mom:Education:9TO12Drop" { return(2) }
+        case "Birth:Mom:Education:HSgrad" { return(3) }
+        case "Birth:Mom:Education:SomeCollege" { return(4) }
+        case "Birth:Mom:Education:BachelorDegree" { return(6) }
+        case "Birth:Mom:Education:MasterDegree" { return(7) }
+        case "Birth:Mom:Education:Doctorate" { return(8) }
+        case "Birth:Father:Race:White" { return(1) }
+        case "Birth:Father:Race:Black" { return(2) }
+        case "Birth:Father:Race:AIAN" { return(3) }
+        case "Birth:Father:Race:Asian" { return(4) }
+        case "Birth:Father:Race:NHOPI" { return(5) }
+        case "Birth:Father:Education:8thOrElse" { return(1) }
+        case "Birth:Father:Education:9TO12Drop" { return(2) }
+        case "Birth:Father:Education:HSgrad" { return(3) }
+        case "Birth:Father:Education:SomeCollege" { return(4) }
+        case "Birth:Father:Education:BachelorDegree" { return(6) }
+        case "Birth:Father:Education:MasterDegree" { return(7) }
+        case "Birth:Father:Education:Doctorate" { return(8) }
     }
 }
 
