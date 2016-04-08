@@ -39,6 +39,8 @@ my $SPACE       = " ";
 my $COMMA       = q{,};
 my $INVALID_FIELD = "Not a valid field, try again.";
 my $INVALID_CHOICE = "Not a valid choice, try again.";
+my $DIVIDER = "==========================================";
+my $HEADER = "BIG BANG Death/ Birth statistics program".$NEW_LINE.$DIVIDER.$NEW_LINE;
 
 
 
@@ -120,14 +122,14 @@ sub printOptions{
     print "2. Value Compare[field specific] or [field specific] has [least/most] occurences in [field specific] in [period]".$NEW_LINE;
     print "3. Value Get [field specific], happenec with [field specific] happened with [field specific]... in [period]".$NEW_LINE;
     print "4. Trend [field specific] and [field specific] over [period]".$NEW_LINE;
-    print "7. Etc".$NEW_LINE;
+    print "5. Quit (or type quit)".$NEW_LINE;
     return;
 }
 
 sub getYearRange{
     my $RANGE_PROMPT = "Choose the range of years you would like to examine (Min: 1994 - Max: 2014).\n";
-    my $YEAR_START_PROMPT = "Starting year:";
-    my $YEAR_END_PROMPT = "Ending year:";
+    my $YEAR_START_PROMPT = "Starting year: ";
+    my $YEAR_END_PROMPT = "Ending year: ";
     my $INVALID_YEAR_PROMPT = "Invalid start year. Must be in the range of 1994 to 2014.";
     my $INVALID_RANGE_PROMPT_X = "Invalid start year. Must be in the range of ";
     my $INVALID_RANGE_PROMPT_Y = " to 2014.";
@@ -163,10 +165,19 @@ sub getYearRange{
     return (@years);
 }
 
+sub isNotAlpha{
+    if ($_[0] =~ /^[0-9,.E]+$/){
+        return  $TRUE;
+    }
+    else {
+        return $FALSE;
+    }
+}
+
 sub validateStartYear{
     my $year = $_[0];
 
-    if ($year =~ /^[0-9,.E]+$/){}
+    if (isNotAlpha($year)){}
     else { return $FALSE; }
 
     if($year < 1994){
@@ -183,7 +194,7 @@ sub validateStartYear{
 sub validateEndYear{
     my $year = $_[0];
 
-    if ($year =~ /^[0-9,.E]+$/){}
+    if (isNotAlpha($year)){}
     else { return $FALSE; }
 
     if($year < $startingYear){
@@ -199,6 +210,7 @@ sub validateEndYear{
 
 sub clearScreen{
     system("clear");
+    print $HEADER;
     return;
 }
 
@@ -212,7 +224,7 @@ sub valMaxMin{
     clearScreen();
 
     print "RUN VALMAXMIN";
-    
+
     #todo
     return;
 }
