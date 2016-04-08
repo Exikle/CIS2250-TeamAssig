@@ -342,13 +342,13 @@ sub valComp{
     print "Are you looking for [M]ost or [L]east?".$NEW_LINE;
     do {
         $maxFlag = lc(readInput());
-        if (($maxFlag != "m")&&($maxFlag != "l")) {
+        if (($maxFlag ne "m")&&($maxFlag ne "l")) {
             print $INVALID_FIELD.$NEW_LINE;
         }
-    } while (($maxFlag != "M")&&($maxFlag != "m")&&($maxFlag != "l")&&($maxFlag != "L"));
+    } while (($maxFlag ne "M")&&($maxFlag ne "m")&&($maxFlag ne "l")&&($maxFlag ne "L"));
 
     print "Please select the field for the last block [All fields are in the user manual]".$NEW_LINE;
-    if ($maxFlag == "m"){
+    if ($maxFlag eq "m"){
         print "[".$fieldOneComp."]"." or [".$fieldTwoComp."] has most occurences in [GENERAL FIELD] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
     }
     else
@@ -357,17 +357,17 @@ sub valComp{
     }
     do {
         $fieldOfComp = getField();
-        if  (($fieldOfComp != "Death:TotalNumber")||($fieldOfComp != "Birth:TotalNumber")){
+        if  (($fieldOfComp ne "Death:TotalNumber")&&($fieldOfComp ne "Birth:TotalNumber")){
             print $INVALID_FIELD." User either Death:TotalNumber or Birth:TotalNumber".$NEW_LINE;
         }
-    }while (($fieldOfComp != "Death:TotalNumber")||($fieldOfComp != "Birth:TotalNumber"));
+    }while (($fieldOfComp ne "Death:TotalNumber")&&($fieldOfComp ne "Birth:TotalNumber"));
     clearScreen();
     while ($currentYear <= $years[1]) {
-        if ($fieldOfComp == "Death:TotalNumber") {
+        if ($fieldOfComp eq "Death:TotalNumber") {
             $fileName = "Data/Death/".$currentYear."/deaths".$currentYear.".txt";
         }
         else {
-            $fileName = "Data/Birth/".$currentYear."/birth".$currentYear.".txt"; 
+            $fileName = "Data/Birth/".$currentYear."/births".$currentYear.".txt"; 
         }
         open my $file_fh, '<', $fileName
             or die "Unable to open names file: $fileName\n";
@@ -378,8 +378,6 @@ sub valComp{
             if ($csv -> parse($file_record)){
                 my @master_fields = $csv->fields();
                 $record_count++;
-                clearScreen();
-                print $record_count;
                 $fieldOneArray[$record_count] = $master_fields[$fieldOneLocation];
                 $fieldTwoArray[$record_count] = $master_fields[$fieldTwoLocation];
             } else {
@@ -387,19 +385,19 @@ sub valComp{
             }
         }
         for my $i (0..$record_count) {
-            print $i.$NEW_LINE;
-            if ($fieldOneArray[$record_count] == $fieldOneCompValue)
+            if ($fieldOneArray[$i] == $fieldOneCompValue)
             {
                 $fieldOneTotalValue++;
             }
-            elsif ($fieldTwoArray[$record_count] == $fieldTwoCompValue)
+            if ($fieldTwoArray[$i] == $fieldTwoCompValue)
             {
                 $fieldTwoTotalValue++;
             }
         }
         
+        $currentYear++;
     }
-    print $fieldOneTotalValue."     ".$fieldTwoTotalValue;
+    print $fieldOneTotalValue."                  ".$fieldTwoTotalValue;
     <STDIN>;
     return;
 }
