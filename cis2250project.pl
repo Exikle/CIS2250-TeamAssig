@@ -70,10 +70,10 @@ sub main{
     clearScreen();
     manualReminder();
     
-    clearScreen();
-    startUserChoices($years[0], $years[1]);
-    
-    system("clear");
+    while($TRUE){
+        clearScreen();
+        startUserChoices($years[0], $years[1]);
+    }
     return;
 }
 
@@ -113,7 +113,7 @@ sub startUserChoices {
                 trend(@years);
             }
             case 5 {
-                print $QUITTING_PROMPT.$NEW_LINE;
+                quitProgram();
             }
             else {
                 $validChoice = $FALSE;
@@ -1046,14 +1046,18 @@ sub openFile{
 #     return 
 # }
 
-sub readInput{
-    my $input = <STDIN>;
-    chomp($input);
-    if(lc($input) eq "quit"){
+sub quitProgram{
         print $QUITTING_PROMPT.$SPACE.$ENTER_CONTINUE.$NEW_LINE;
         waitForKey();
         system("clear");
         exit();
+}
+
+sub readInput{
+    my $input = <STDIN>;
+    chomp($input);
+    if(lc($input) eq "quit"){
+        quitProgram();
     }
     return $input;
 }
