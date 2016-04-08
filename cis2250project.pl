@@ -109,10 +109,10 @@ sub startUserChoices {
             case 3 {
                 valGet(@years);
             }
+            # case 4 {
+            #     trend(@years);
+            # }
             case 4 {
-                trend(@years);
-            }
-            case 5 {
                 quitProgram();
             }
             else {
@@ -130,8 +130,8 @@ sub printOptions{
     print "1. Value Max/Min [Least/Most] [deaths or [field specific]] in [field specific] between [period]".$NEW_LINE;
     print "2. Value Compare[field specific] or [field specific] has [least/most] occurences in [field specific] in [period]".$NEW_LINE;
     print "3. Value Get [field specific], happenec with [field specific] happened with [field specific]... in [period]".$NEW_LINE;
-    print "4. Trend [field specific] and [field specific] over [period]".$NEW_LINE;
-    print "5. Quit (or type quit)".$NEW_LINE;
+    # print "4. Trend [field specific] and [field specific] over [period]".$NEW_LINE;
+    print "4. Quit (or type quit)".$NEW_LINE;
     return;
 }
 
@@ -313,10 +313,11 @@ sub valMaxMin{
 
     while ($currentYear <= $years[1]) {
         if ($isDeathStats == $TRUE){
-            $fileName = "Data/Death/".$currentYear."/deaths".$currentYear.".txt";
+            $fileName = "Data/Death/deaths".$currentYear.".txt";
+
         }
         else{
-            $fileName = "Data/Birth/".$currentYear."/birth".$currentYear.".txt"; 
+            $fileName = "Data/Birth/birth".$currentYear.".txt"; 
         }
         open my $file_fh, '<', $fileName
             or die "Unable to open names file: $fileName\n";
@@ -337,7 +338,7 @@ sub valMaxMin{
                 $forCount = -1;
                 foreach my $temp (@unique){
                     $forCount++;
-                    if($temp == $master_fields[$statLoc]){
+                    if($temp eq $master_fields[$statLoc]){
                         $actuallyUnique = $FALSE;
                         $uCounter[$forCount]++;
                     }
@@ -360,14 +361,28 @@ sub valMaxMin{
         $xYear++;
     }
     $forCount = 0;
+    my $reqField;
+    my $reqFieldVal = $uCounter[$forCount];
     foreach my $temp (@unique){
-        print $uCounter[$forCount].$NEW_LINE;
+        print $temp." --- ".$uCounter[$forCount].$NEW_LINE;
+
+        if($mostOf == 1) { #Most
+            if($uCounter[$forCount] >  $reqFieldVal){
+                $reqFieldVal = $uCounter[$forCount];
+            }
+        }
+        else {
+            if($uCounter[$forCount] < $reqFieldVal){
+                $reqFieldVal = $uCounter[$forCount];
+            }
+        }
+
         $forCount++;
     }
 
     waitForKey();
     # 
-    #todo
+    #todo graphing
     return;
 
 }
@@ -541,9 +556,10 @@ sub valComp{
     print $fh "\"fieldComp\",\"fieldTotalValue\"\n";
     print $fh $fieldOneComp.",".$fieldOneTotalValue."\n".$fieldTwoComp.",".$fieldTwoTotalValue;
     close $fh;
+
     system("perl grapher/plotter.pl grapher/comp.txt grapher/output.pdf");
     print "Press enter to see the graph".$NEW_LINE;
-    <STDIN>;
+    waitForKey();
     system("gnome-open grapher/output.pdf");
     return;
 }
