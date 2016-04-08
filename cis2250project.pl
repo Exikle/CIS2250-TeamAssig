@@ -122,6 +122,7 @@ sub startUserChoices {
 
         }
     }while($validChoice == $FALSE);
+
     return($choice);
 }
 
@@ -917,15 +918,16 @@ sub openFile{
     return $total;
 }
 
-sub trend{
-    # my @years = $_[0];
+# Icebox
+# sub trend{ 
+#     # my @years = $_[0];
 
-    clearScreen();
+#     clearScreen();
     
-    print "running Trends code.";
-    #todo
-    return 
-}
+#     print "running Trends code.";
+#     #todo
+#     return 
+# }
 
 sub readInput{
     my $input = <STDIN>;
