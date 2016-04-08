@@ -414,6 +414,8 @@ sub valMaxMin{
     print "Press enter to see the graph".$NEW_LINE;
     waitForKey();
 
+    system("open grapher/output.pdf");
+
 
     return;
 
@@ -1074,13 +1076,15 @@ sub valGet{
     my $total = 0;
     my $continue = 0;
     my $valid = 0;
+    my $temp;
 
     my $userInput;
 
-    #clearScreen();
+    clearScreen();
 
     print "Please select the field(s)[All fields are in user manual]".$NEW_LINE;
-    print "The # of [Field One] with [Field Two] with... (no limit to # of fields)".$NEW_LINE.$NEW_LINE;
+    print "The # of [Field One] with [Field Two] with... (no limit to # of fields)".$NEW_LINE;
+    print "Can not use Fields of different type (ie: birth with deaths)".$NEW_LINE.$NEW_LINE;
     while ($continue == 0) {
         $valid = 0;
         print "Field: ";
@@ -1095,16 +1099,23 @@ sub valGet{
                     print "You've already used ".$userInput.$NEW_LINE.$NEW_LINE;
                     last;
                 }
+                if (substr($userInput, 0,1) ne substr($fields[$k], 0, 1)) {
+                    clearScreen
+                    $valid = 1;
+                    print "Not the same type as initial Field".$NEW_LINE.$NEW_LINE;
+                    last;
+                }
+                
 
             }
 
             if ($valid == 0) {
                 $fields[$fieldCount] = $userInput;
                 $fieldCount++;
-                print "Add new field? (y)es or (n)o.".$NEW_LINE;
+                print "Add new field? (y)es or (n)o: ";
                 $userInput = readInput();
+                print $NEW_LINE;
                 if(lc($userInput) eq "n") {
-                    print "Triggered".$NEW_LINE;
                     $continue = 1;
                 }
             }   
@@ -1121,7 +1132,7 @@ sub valGet{
         $total += openFile($years[0]+$i, @fields, $fieldCount);
     }
 
-    #clearScreen();
+    clearScreen();
 
     print "The number of ".$fields[0];
 
@@ -1144,11 +1155,19 @@ sub openFile{
     my $record_count = 0;
     my $total = 0;
     my $value = "";
-    my $element = "";\
+    my $element = "";
+    my $count = 0;
+    my $fileName;
 
-    my $year_fh;
-    my $type;
-    my $fileName = "Data/".$type."/".lc($type).$year.".txt";
+    if (substr($fields[0], 0, 1) eq "D") {
+        $fileName = "Data/Death/deaths".$year.".txt";
+    }
+
+    else {
+        $fileName = "Data/Birth/birth".$year.".txt";
+    }
+
+    
 
     open my $year_fh, '<', $fileName
        or die "Unable to open file\n";
@@ -1162,12 +1181,12 @@ sub openFile{
        if ( $csv->parse($year_record) ) {
           my @master_fields = $csv->fields();
           $record_count++;
+          $count = 0;
 
-            for my $i ( 0..$fieldCount-1 ){
+            for my $i ( 0..$fieldCount - 1 ){
 
                 $element = getFieldValue($fields[$i]);
                 $value = $master_fields[getFieldLocation($fields[$i])];
-                print $element.$NEW_LINE;
 
                 if ($value eq "M") {
                     $value = "1";
@@ -1177,14 +1196,20 @@ sub openFile{
                 }
 
                 if ($value eq $element) { #### get this resolved
-                    $total++;
+                    $count++;
                 }
+            }
+
+            if ($count == $fieldCount) {
+                $total++;
             }
        }
 
        else {
           warn "Line/record could not be parsed\n";
        }
+
+       clearScreen();
 
     }
 
