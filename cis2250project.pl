@@ -970,42 +970,76 @@ sub getField{
 }
 
 sub valGet{
-    my @years = $_[0];
+    my @years;
+
+    $years[0] = $_[0];
+    $years[1] = $_[1];
     my $yearsTotal = $years[1] - $years[0];
+
+    
     my @fields;
     my $fieldCount = 0;
     my $total = 0;
-    my $continue = $FALSE;
+    my $continue = 0;
+    my $valid = 0;
 
     my $userInput;
 
-    clearScreen();
+    #clearScreen();
 
-    # print "Please select the field(s) for the first block [All fields are in user manual]".$NEW_LINE;
-    # print "[Field specific] that happened with [Field specific] (no limit to # of field specific) from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
-    # do {
-    #     print "Field specific: ".$NEW_LINE;
-    #     $userInput = readInput();
+    print "Please select the field(s)[All fields are in user manual]".$NEW_LINE;
+    print "The # of [Field One] with [Field Two] with... (no limit to # of fields)".$NEW_LINE.$NEW_LINE;
+    while ($continue == 0) {
+        $valid = 0;
+        print "Field: ";
+        $userInput = readInput();
+        print $NEW_LINE;
 
-    #     $fields[fieldCount] = $userInput;
-    #     if (validateField($fieldOneComp) == $TRUE){
-    #         $fieldCount++;
-    #     }
-    #     else{$
-    #         print $INVALID_FIELD.$NEW_LINE;
-    #     }
+        if (validateField($userInput) == $TRUE){
+            for my $k ( 0..$fieldCount-1 ) {
+                if ($userInput eq $fields[$k]){
+                    clearScreen();
+                    $valid = 1;
+                    print "You've already used ".$userInput.$NEW_LINE.$NEW_LINE;
+                    last;
+                }
 
-    #     print "Add new field specifc? (y)es or (n)o.".$NEW_LINE;
-    #     userInput = readInput();
-    #     if(userInput == "n") {
-    #         $continue = $TRUE;
-    #     }
-        
-    # } while ($continue == $FALSE);
+            }
 
-    # for my $i ( 0..$yearsTotal-1 ) {
-    #     total += openFile($years[0]+$i, @fields, $fieldCount);
-    # }
+            if ($valid == 0) {
+                $fields[$fieldCount] = $userInput;
+                $fieldCount++;
+                print "Add new field? (y)es or (n)o.".$NEW_LINE;
+                $userInput = readInput();
+                if(lc($userInput) eq "n") {
+                    print "Triggered".$NEW_LINE;
+                    $continue = 1;
+                }
+            }   
+            
+        }
+
+        else{
+            print $INVALID_FIELD.$NEW_LINE;
+        }
+
+    }
+
+    for my $i ( 0..$yearsTotal ) {
+        $total += openFile($years[0]+$i, @fields, $fieldCount);
+    }
+
+    #clearScreen();
+
+    print "The number of ".$fields[0];
+
+    for my $j ( 1..$fieldCount-1 ){
+        print " with ".$fields[$j];
+    }
+
+    print " between ".$years[0]."-".$years[1]." is ".$total.$NEW_LINE;
+
+    waitForKey();
 
     #todo
     return;
@@ -1017,29 +1051,47 @@ sub openFile{
     my $fieldCount = $_[2];
     my $record_count = 0;
     my $total = 0;
+    my $value = "";
+    my $element = "";\
+    my $
 
-    # open my $year_fh, '<', "$year".".txt"
-    #    or die "Unable to open file\n";
+    open my $year_fh, '<', "Data/Death/deaths$year.txt"
+       or die "Unable to open file\n";
 
-    # my @records = <$names_fh>;
+    my @records = <$year_fh>;
 
-    # close $year_fh or
-    #    die "Unable to close\n";
+    close $year_fh or
+       die "Unable to close\n";
 
-    # foreach my $year_record ( @records ) {
-    #    if ( $csv->parse($year_record) ) {
-    #       my @master_fields = $csv->fields();
-    #       $record_count++;
-    #       for my $i ( 0..$fieldCount ){
-    #         if ($master_fields[] eq $fields[$i]) { #### get this resolved
-    #             $total++;
-    #         }
-    #       }
-    #    }
-    #    else {
-    #       warn "Line/record could not be parsed\n";
-    #    }
-    # }
+    foreach my $year_record ( @records ) {
+       if ( $csv->parse($year_record) ) {
+          my @master_fields = $csv->fields();
+          $record_count++;
+
+            for my $i ( 0..$fieldCount-1 ){
+
+                $element = getFieldValue($fields[$i]);
+                $value = $master_fields[getFieldLocation($fields[$i])];
+                print $element.$NEW_LINE;
+
+                if ($value eq "M") {
+                    $value = "1";
+                }
+                elsif ($value eq "F") {
+                    $value = "2";
+                }
+
+                if ($value eq $element) { #### get this resolved
+                    $total++;
+                }
+            }
+       }
+
+       else {
+          warn "Line/record could not be parsed\n";
+       }
+
+    }
 
     return $total;
 }
