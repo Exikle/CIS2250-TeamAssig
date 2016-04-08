@@ -399,18 +399,23 @@ sub valComp{
     my $fieldOfComp;
     my $record_count = -1;
     $currentYear = $years[0];
-    clearScreen();
     
     # ask first specific
-
+    clearScreen();
     print "Please select the field for the first block (Refer to user manual)".$NEW_LINE;
     print "[FIELD ONE] or [FIELD TWO] has [LEAST/ MOST] occurences in [GENERAL FIELD] from ".$years[0]." to ".$years[1].$NEW_LINE.$NEW_LINE;
     
-    $fieldOneComp = getField();
-    $fieldOneCompValue = getFieldValue($fieldOneComp);
-    $fieldOneLocation = getFieldLocation($fieldOneComp);
+    do {
+        $fieldOneComp = getField();
+        $fieldOneCompValue = getFieldValue($fieldOneComp);
+        $fieldOneLocation = getFieldLocation($fieldOneComp);
+        if ($fieldOneCompValue == -1)
+        {
+            printf("That field does not apply to this template, use a field specific".$NEW_LINE);
+        }
+    } while ($fieldOneCompValue == -1);
     clearScreen();
-    
+
     print "Please select the field for the second block (Refer to user manual)".$NEW_LINE;
     print "[".$fieldOneComp."]"." or [FIELDSPECIFIC] has [LEAST/ MOST] occurences in [GENERAL FIELD] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
     
@@ -431,7 +436,12 @@ sub valComp{
             print $INVALID_FIELD.$NEW_LINE;
         }
     } while (($maxFlag ne "M")&&($maxFlag ne "m")&&($maxFlag ne "l")&&($maxFlag ne "L"));
+
+
     clearScreen();
+
+
+
     print "Please select the field for the last block [All fields are in the user manual]".$NEW_LINE;
     if ($maxFlag eq "m"){
         print "[".$fieldOneComp."]"." or [".$fieldTwoComp."] has most occurences in [GENERAL FIELD] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
@@ -442,13 +452,17 @@ sub valComp{
     }
     do {
         $fieldOfComp = getField();
-        if  (($fieldOfComp ne "Death:TotalNumber")&&($fieldOfComp ne "Birth:TotalNumber")){
+        if  (($fieldOfComp ne "Death")&&($fieldOfComp ne "Birth")){
             print $INVALID_FIELD." User either Death or Birth".$NEW_LINE;
         }
-    }while (($fieldOfComp ne "Death:TotalNumber")&&($fieldOfComp ne "Birth:TotalNumber"));
+    }while (($fieldOfComp ne "Death")&&($fieldOfComp ne "Birth"));
+
+
     clearScreen();
+
+
     while ($currentYear <= $years[1]) {
-        if ($fieldOfComp eq "Death:TotalNumber") {
+        if ($fieldOfComp eq "Death") {
             $fileName = "Data/Death/".$currentYear."/deaths".$currentYear.".txt";
         }
         else {
@@ -473,17 +487,31 @@ sub valComp{
                 warn "Line could not be prepared";
             }
         }
-        for my $i (0..$record_count) {
-            if ($fieldOneArray[$i] == $fieldOneCompValue)
-            {
-                $fieldOneTotalValue++;
-            }
-            if ($fieldTwoArray[$i] == $fieldTwoCompValue)
-            {
-                $fieldTwoTotalValue++;
+        if (verifyRace($fieldOneComp) == 1) {
+           for my $i (0..$record_count) {
+                if (convertRace($fieldOneArray[$i]) == $fieldOneCompValue)
+                {
+                    $fieldOneTotalValue++;
+                }
+                if (convertRace($fieldTwoArray[$i]) == $fieldTwoCompValue)
+                {
+                    $fieldTwoTotalValue++;
+                }
             }
         }
-        
+        else
+        {
+           for my $i (0..$record_count) {
+                if ($fieldOneArray[$i] == $fieldOneCompValue)
+                {
+                    $fieldOneTotalValue++;
+                }
+                if ($fieldTwoArray[$i] == $fieldTwoCompValue)
+                {
+                    $fieldTwoTotalValue++;
+                }
+            }
+        }
         $currentYear++;
     }
     if ($maxFlag eq "m")
@@ -518,6 +546,43 @@ sub valComp{
     <STDIN>;
     system("gnome-open grapher/output.pdf");
     return;
+}
+
+sub verifyRace{
+    my $race = $_[0];
+    switch($race)
+    {
+        case "Death:Race:White" { return(1) }
+        case "Death:Race:Black" { return(1) }
+        case "Death:Race:AmericanIndian" { return(1) }
+        case "Death:Race:Chinese" { return(1) }
+        case "Death:Race:Japanese" { return(1) }
+        case "Death:Race:Hawaiian" { return(1) }
+        case "Death:Race:Filipino" { return(1) }
+        case "Death:Race:AsianIndian" { return(1) }
+        case "Death:Race:Korean" { return(1) }
+        case "Death:Race:Samoan" { return(1) }
+        case "Death:Race:Vietnamese" { return(1) }
+        case "Death:Race:Guamanian" { return(1) }
+        case "Birth:Father:Race:White" { return(1) }
+        case "Birth:Father:Race:Black" { return(1) }
+        case "Birth:Father:Race:AIAN" { return(1) }
+        case "Birth:Father:Race:Asian" { return(1) }
+        case "Birth:Father:Race:NHOPI" { return(1) }
+        case "Birth:Mom:Race:White" { return(1) }
+        case "Birth:Mom:Race:Black" { return(1) }
+        case "Birth:Mom:Race:AIAN" { return(1) }
+        case "Birth:Mom:Race:Asian" { return(1) }
+        case "Birth:Mom:Race:NHOPI" { return(1) }
+    }
+    return(0);
+}
+
+sub convertRace{
+    my $race = $_[0];
+    my $newRace;
+    $newRace = substr($race,0,2);
+    return($newRace);
 }
 
 sub getFieldLocation {
@@ -788,6 +853,7 @@ sub getFieldValue {
     case "Birth:Father:Education:MasterDegree" { return(7) }
     case "Birth:Father:Education:Doctorate" { return(8) }
     }
+    return(-1);
 }
 
 sub validateField {
