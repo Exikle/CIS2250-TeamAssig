@@ -70,10 +70,10 @@ sub main{
     clearScreen();
     manualReminder();
     
-    clearScreen();
-    startUserChoices($years[0], $years[1]);
-    
-    system("clear");
+    while($TRUE){
+        clearScreen();
+        startUserChoices($years[0], $years[1]);
+    }
     return;
 }
 
@@ -109,11 +109,11 @@ sub startUserChoices {
             case 3 {
                 valGet(@years);
             }
+            # case 4 {
+            #     trend(@years);
+            # }
             case 4 {
-                trend(@years);
-            }
-            case 5 {
-                print $QUITTING_PROMPT.$NEW_LINE;
+                quitProgram();
             }
             else {
                 $validChoice = $FALSE;
@@ -130,8 +130,8 @@ sub printOptions{
     print "1. Value Max/Min [Least/Most] [deaths or [field specific]] in [field specific] between [period]".$NEW_LINE;
     print "2. Value Compare[field specific] or [field specific] has [least/most] occurences in [field specific] in [period]".$NEW_LINE;
     print "3. Value Get [field specific], happenec with [field specific] happened with [field specific]... in [period]".$NEW_LINE;
-    print "4. Trend [field specific] and [field specific] over [period]".$NEW_LINE;
-    print "5. Quit (or type quit)".$NEW_LINE;
+    # print "4. Trend [field specific] and [field specific] over [period]".$NEW_LINE;
+    print "4. Quit (or type quit)".$NEW_LINE;
     return;
 }
 
@@ -313,10 +313,11 @@ sub valMaxMin{
 
     while ($currentYear <= $years[1]) {
         if ($isDeathStats == $TRUE){
-            $fileName = "Data/Death/".$currentYear."/deaths".$currentYear.".txt";
+            $fileName = "Data/Death/deaths".$currentYear.".txt";
+
         }
         else{
-            $fileName = "Data/Birth/".$currentYear."/birth".$currentYear.".txt"; 
+            $fileName = "Data/Birth/birth".$currentYear.".txt"; 
         }
         open my $file_fh, '<', $fileName
             or die "Unable to open names file: $fileName\n";
@@ -337,7 +338,7 @@ sub valMaxMin{
                 $forCount = -1;
                 foreach my $temp (@unique){
                     $forCount++;
-                    if($temp == $master_fields[$statLoc]){
+                    if($temp eq $master_fields[$statLoc]){
                         $actuallyUnique = $FALSE;
                         $uCounter[$forCount]++;
                     }
@@ -360,14 +361,60 @@ sub valMaxMin{
         $xYear++;
     }
     $forCount = 0;
+    my $reqField;
+    my $reqFieldVal = $uCounter[$forCount];
     foreach my $temp (@unique){
-        print $uCounter[$forCount].$NEW_LINE;
+        # print $temp." --- ".$uCounter[$forCount].$NEW_LINE;
+
+        if($mostOf == 1) { #Most
+            if($uCounter[$forCount] >  $reqFieldVal){
+                $reqFieldVal = $uCounter[$forCount];
+                # print "Bam more";
+                $reqField = $temp;
+                # print $temp." --- ".$uCounter[$forCount].$NEW_LINE;
+            }
+        }
+        else { #Less
+            if($uCounter[$forCount] < $reqFieldVal){
+                $reqFieldVal = $uCounter[$forCount];
+                # print "Bam less";
+                $reqField = $temp;
+                # print $temp." --- ".$uCounter[$forCount].$NEW_LINE;
+            }
+        }
+
         $forCount++;
     }
 
-    waitForKey();
+    if($mostOf == 1) { #Most
+        print "The max stat in ".$fieldInp." is:".$NEW_LINE;
+    }
+    else{
+        print "The lowest stat in ".$fieldInp." is:".$NEW_LINE;
+    }
+    print $reqField." at ".$reqFieldVal.$NEW_LINE;
+
     # 
-    #todo
+    #todo graphing
+
+
+    # print $fieldOneComp.": ".$fieldOneTotalValue." ".$fieldTwoComp.": ".$fieldTwoTotalValue.$NEW_LINE;
+    open (my $fh, '>', 'grapher/maxMin.txt');
+    print $fh "\"fieldName\",\"fieldTotalValue\"\n";
+
+    $forCount = 0;
+    foreach my $temp (@unique){
+        print $fh $temp.",".$uCounter[$forCount].$NEW_LINE;
+    }
+
+    close $fh;
+
+    system("perl grapher/plotter.pl grapher/maxMin.txt grapher/output.pdf");
+
+    print "Press enter to see the graph".$NEW_LINE;
+    waitForKey();
+
+
     return;
 
 }
@@ -531,7 +578,7 @@ sub valComp{
     close $fh;
     system("perl grapher/plotter.pl grapher/comp.txt grapher/".$fieldOneComp."_vs_".$fieldTwoComp.".output.pdf");
     print "Press enter to see the graph".$NEW_LINE;
-    <STDIN>;
+    waitForKey();
     system("gnome-open grapher/output.pdf");
     return;
 }
@@ -1015,42 +1062,76 @@ sub getField{
 }
 
 sub valGet{
-    my @years = $_[0];
+    my @years;
+
+    $years[0] = $_[0];
+    $years[1] = $_[1];
     my $yearsTotal = $years[1] - $years[0];
+
+    
     my @fields;
     my $fieldCount = 0;
     my $total = 0;
-    my $continue = $FALSE;
+    my $continue = 0;
+    my $valid = 0;
 
     my $userInput;
 
-    clearScreen();
+    #clearScreen();
 
-    # print "Please select the field(s) for the first block [All fields are in user manual]".$NEW_LINE;
-    # print "[Field specific] that happened with [Field specific] (no limit to # of field specific) from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
-    # do {
-    #     print "Field specific: ".$NEW_LINE;
-    #     $userInput = readInput();
+    print "Please select the field(s)[All fields are in user manual]".$NEW_LINE;
+    print "The # of [Field One] with [Field Two] with... (no limit to # of fields)".$NEW_LINE.$NEW_LINE;
+    while ($continue == 0) {
+        $valid = 0;
+        print "Field: ";
+        $userInput = readInput();
+        print $NEW_LINE;
 
-    #     $fields[fieldCount] = $userInput;
-    #     if (validateField($fieldOneComp) == $TRUE){
-    #         $fieldCount++;
-    #     }
-    #     else{$
-    #         print $INVALID_FIELD.$NEW_LINE;
-    #     }
+        if (validateField($userInput) == $TRUE){
+            for my $k ( 0..$fieldCount-1 ) {
+                if ($userInput eq $fields[$k]){
+                    clearScreen();
+                    $valid = 1;
+                    print "You've already used ".$userInput.$NEW_LINE.$NEW_LINE;
+                    last;
+                }
 
-    #     print "Add new field specifc? (y)es or (n)o.".$NEW_LINE;
-    #     userInput = readInput();
-    #     if(userInput == "n") {
-    #         $continue = $TRUE;
-    #     }
-        
-    # } while ($continue == $FALSE);
+            }
 
-    # for my $i ( 0..$yearsTotal-1 ) {
-    #     total += openFile($years[0]+$i, @fields, $fieldCount);
-    # }
+            if ($valid == 0) {
+                $fields[$fieldCount] = $userInput;
+                $fieldCount++;
+                print "Add new field? (y)es or (n)o.".$NEW_LINE;
+                $userInput = readInput();
+                if(lc($userInput) eq "n") {
+                    print "Triggered".$NEW_LINE;
+                    $continue = 1;
+                }
+            }   
+            
+        }
+
+        else{
+            print $INVALID_FIELD.$NEW_LINE;
+        }
+
+    }
+
+    for my $i ( 0..$yearsTotal ) {
+        $total += openFile($years[0]+$i, @fields, $fieldCount);
+    }
+
+    #clearScreen();
+
+    print "The number of ".$fields[0];
+
+    for my $j ( 1..$fieldCount-1 ){
+        print " with ".$fields[$j];
+    }
+
+    print " between ".$years[0]."-".$years[1]." is ".$total.$NEW_LINE;
+
+    waitForKey();
 
     #todo
     return;
@@ -1062,29 +1143,50 @@ sub openFile{
     my $fieldCount = $_[2];
     my $record_count = 0;
     my $total = 0;
+    my $value = "";
+    my $element = "";\
 
-    # open my $year_fh, '<', "$year".".txt"
-    #    or die "Unable to open file\n";
+    my $year_fh;
+    my $type;
+    my $fileName = "Data/".$type."/".lc($type).$year.".txt";
 
-    # my @records = <$names_fh>;
+    open my $year_fh, '<', $fileName
+       or die "Unable to open file\n";
 
-    # close $year_fh or
-    #    die "Unable to close\n";
+    my @records = <$year_fh>;
 
-    # foreach my $year_record ( @records ) {
-    #    if ( $csv->parse($year_record) ) {
-    #       my @master_fields = $csv->fields();
-    #       $record_count++;
-    #       for my $i ( 0..$fieldCount ){
-    #         if ($master_fields[] eq $fields[$i]) { #### get this resolved
-    #             $total++;
-    #         }
-    #       }
-    #    }
-    #    else {
-    #       warn "Line/record could not be parsed\n";
-    #    }
-    # }
+    close $year_fh or
+       die "Unable to close\n";
+
+    foreach my $year_record ( @records ) {
+       if ( $csv->parse($year_record) ) {
+          my @master_fields = $csv->fields();
+          $record_count++;
+
+            for my $i ( 0..$fieldCount-1 ){
+
+                $element = getFieldValue($fields[$i]);
+                $value = $master_fields[getFieldLocation($fields[$i])];
+                print $element.$NEW_LINE;
+
+                if ($value eq "M") {
+                    $value = "1";
+                }
+                elsif ($value eq "F") {
+                    $value = "2";
+                }
+
+                if ($value eq $element) { #### get this resolved
+                    $total++;
+                }
+            }
+       }
+
+       else {
+          warn "Line/record could not be parsed\n";
+       }
+
+    }
 
     return $total;
 }
@@ -1100,14 +1202,18 @@ sub openFile{
 #     return 
 # }
 
-sub readInput{
-    my $input = <STDIN>;
-    chomp($input);
-    if(lc($input) eq "quit"){
+sub quitProgram{
         print $QUITTING_PROMPT.$SPACE.$ENTER_CONTINUE.$NEW_LINE;
         waitForKey();
         system("clear");
         exit();
+}
+
+sub readInput{
+    my $input = <STDIN>;
+    chomp($input);
+    if(lc($input) eq "quit"){
+        quitProgram();
     }
     return $input;
 }
