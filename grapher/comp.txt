@@ -1,0 +1,3 @@
+"fieldComp","fieldTotalValue"
+Death:Sex:Male,39
+Death:Sex:Female,33

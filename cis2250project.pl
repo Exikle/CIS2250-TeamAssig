@@ -347,7 +347,7 @@ sub valComp{
             print $INVALID_FIELD.$NEW_LINE;
         }
     } while (($maxFlag ne "M")&&($maxFlag ne "m")&&($maxFlag ne "l")&&($maxFlag ne "L"));
-
+    clearScreen();
     print "Please select the field for the last block [All fields are in the user manual]".$NEW_LINE;
     if ($maxFlag eq "m"){
         print "[".$fieldOneComp."]"." or [".$fieldTwoComp."] has most occurences in [GENERAL FIELD] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
@@ -402,7 +402,12 @@ sub valComp{
         
         $currentYear++;
     }
-    print $fieldOneTotalValue."                  ".$fieldTwoTotalValue;
+    print $fieldOneComp.": ".$fieldOneTotalValue." ".$fieldTwoComp.": ".$fieldTwoTotalValue.$NEW_LINE;
+    open (my $fh, '>', 'grapher/comp.txt');
+    print $fh "\"fieldComp\",\"fieldTotalValue\"\n";
+    print $fh $fieldOneComp.",".$fieldOneTotalValue."\n".$fieldTwoComp.",".$fieldTwoTotalValue;
+    close $fh;
+    system("perl grapher/plotter.pl grapher/comp.txt grapher/test.pdf");
     <STDIN>;
     return;
 }
