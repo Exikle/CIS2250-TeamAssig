@@ -37,6 +37,7 @@ my $FALSE       = 0;
 my $NEW_LINE    = "\n";
 my $SPACE       = " ";
 my $COMMA       = q{,};
+my $EMPTY = q{};
 my $INVALID_FIELD = "Not a valid field, try again.";
 my $INVALID_CHOICE = "Not a valid choice, try again.";
 my $DIVIDER = "==========================================";
@@ -106,9 +107,6 @@ sub startUserChoices {
                 valMaxMin($years[0], $years[1]);
             }
             case 2 {
-                # print $years[0].$NEW_LINE;
-                # print $years[1].$NEW_LINE;
-
                 valComp($years[0], $years[1]);
             }
             case 3 {
@@ -282,6 +280,8 @@ sub valMaxMin{
 sub valComp{
     my $continue = $FALSE;
     my @years;
+    my @filename = $EMPTY;
+    
     $years[0] = $_[0];
     $years[1] = $_[1];
     my $fieldOneComp;
@@ -289,6 +289,7 @@ sub valComp{
     my $fieldOneLocation;
     my $fieldTwoComp;
     my $fieldTwoCompValue;
+    my $fieldTwoLocation;
     my $maxFlag;
     my $fieldOfComp;
     
@@ -300,20 +301,26 @@ sub valComp{
     print "[FIELD ONE] or [FIELD TWO] has [LEAST/ MOST] occurences in [GENERAL FIELD] from ".$years[0]." to ".$years[1].$NEW_LINE.$NEW_LINE;
     
     $fieldOneComp = getField();
-    getFieldValue($fieldOneComp);
+    $fieldOneCompValue = getFieldValue($fieldOneComp);
+    $fieldOneLocation = getFieldLocation($fieldOneComp);
     clearScreen();
     
     print "Please select the field for the second block (Refer to user manual)".$NEW_LINE;
-    # print "[".$fieldOneComp."]"." or [FIELDSPECIFIC] has [LEAST/ MOST] occurences in [GENERAL FIELD] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
+    print "[".$fieldOneComp."]"." or [FIELDSPECIFIC] has [LEAST/ MOST] occurences in [GENERAL FIELD] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
     
-    $fieldTwoComp = getField();
-    getFieldValue($fieldTwoComp);
+    do {
+        $fieldTwoComp = getField();
+        $fieldTwoCompValye = getFieldValue($fieldTwoComp);
+        $fieldOneLocation = getFieldLocation($fieldTwoComp);
+        if ($fieldOneLocation != $fieldTwoLocation) {
+            print $INVALID_FIELD." Make sure the field specific you choose belongs to the same as the first one you chose.".$NEW_LINE;
+        }
+    } while ($fieldOneLocation != $fieldTwoLocation);
     clearScreen();
 
     print "Are you looking for [M]ost or [L]east?".$NEW_LINE;
     do {
         $maxFlag = lc(readInput());
-        # $maxFlag = lc($maxFlag); # changes string to lower case
         if (($maxFlag != "m")&&($maxFlag != "l")) {
             print $INVALID_FIELD.$NEW_LINE;
         }
@@ -327,8 +334,16 @@ sub valComp{
     {
         print "[".$fieldOneComp."]"." or [".$fieldTwoComp."] has most occurences in [GENERAL FIELD] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
     }
-    $fieldOfComp = getField();
+    do {
+        $fieldOfComp = getField();
+        if  (($fieldOfComp != "Death:TotalNumber")||($fieldOfComp != "Birth:TotalNumber")){
+            print $INVALID_FIELD." User either Death:TotalNumber or Birth:TotalNumber".$NEW_LINE;
+        }
+    }while (($fieldOfComp != "Death:TotalNumber")||($fieldOfComp != "Birth:TotalNumber"));
     clearScreen();
+    #if Where im working
+
+
     return;
 }
 
