@@ -40,7 +40,7 @@ my $COMMA       = q{,};
 my $INVALID_FIELD = "Not a valid field, try again.";
 my $INVALID_CHOICE = "Not a valid choice, try again.";
 my $DIVIDER = "==========================================";
-my $HEADER = "BIG BANG Death/ Birth statistics program".$NEW_LINE.$DIVIDER.$NEW_LINE;
+my $HEADER = "BIG BANG CDC Death/ Birth statistics program".$NEW_LINE.$DIVIDER.$NEW_LINE;
 my $QUITTING_PROMPT = "Quitting. Thanks for using.";
 
 
@@ -222,9 +222,33 @@ sub clearScreen{
 #  bar graph
 sub valMaxMin{
     my @years = $_[0];
+    my $mostOf;
+    my $isDeathStats;
     clearScreen();
 
-    print "RUN VALMAXMIN";
+    # print "RUN VALMAXMIN";
+
+    print "Did you want to find out:".$NEW_LINE;
+    print "1. Death statistics".$NEW_LINE;
+    print "2. Birth statistics".$NEW_LINE;
+    print "Choice: ";
+    $isDeathStats = readInput();
+
+    clearScreen();
+    if($isDeathStats == $TRUE){
+        print "Death statistics selected.".$NEW_LINE;
+    }
+    else {
+        print "Birth statistics selected. ".$NEW_LINE
+    }
+
+    print "Did you want to find:".$NEW_LINE;
+    print "1. The most of a statistic".$NEW_LINE;
+    print "2. The least of a statistic".$NEW_LINE;
+    print "Choice: ";
+    $mostOf = readInput();
+
+    clearScreen();
 
     #todo
     return;
@@ -663,11 +687,9 @@ sub readInput{
     chomp($input);
     if(lc($input) eq "quit"){
         print $QUITTING_PROMPT.$NEW_LINE;
+        <STDIN>;
+        system("clear");
         exit();
     }
     return $input;
 }
-
-# TODO
-# Present users 
-# Get user input for which template they want to use
