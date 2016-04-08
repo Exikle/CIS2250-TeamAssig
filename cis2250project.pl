@@ -14,7 +14,7 @@ use Switch;
 #   cis2250project.pl
 #      Author(s): Dickson D'Cunha (0904177),
 #                 Alejandro Lobo Mujica (0911715)
-#                 Santiago Gutierrez (0895285)
+#                 Santiago Gutierrez (0895285) MIA
 #                 Henry Nguyen (0884653)
 #      Project: Cis 2250's Final Deliverable
 #      Date of Last Update: Tuesday March 29th, 2016
@@ -43,9 +43,6 @@ my $DIVIDER = "==========================================";
 my $HEADER = "BIG BANG CDC Death/ Birth statistics program".$NEW_LINE.$DIVIDER.$NEW_LINE;
 my $QUITTING_PROMPT = "Quitting. Thanks for using.";
 my $ENTER_CONTINUE = "Press any key to continue.";
-
-
-
 
 my $startingYear    = "";
 my $endingYear      = "";
@@ -851,7 +848,7 @@ sub trend{
 
     clearScreen();
     
-    print "running trends code.";
+    print "running Trends code.";
     #todo
     return 
 }
