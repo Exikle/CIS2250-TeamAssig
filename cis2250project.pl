@@ -452,7 +452,7 @@ sub valComp{
     # ask first specific
     clearScreen();
     print "Please select the field for the first block (Refer to user manual)".$NEW_LINE;
-    print "[FIELD ONE] or [FIELD TWO] has [LEAST/ MOST] occurences in [GENERAL FIELD] from ".$years[0]." to ".$years[1].$NEW_LINE.$NEW_LINE;
+    print "[FIELD ONE] or [FIELD TWO] has [LEAST/ MOST] occurences in [Birth/Death] from ".$years[0]." to ".$years[1].$NEW_LINE.$NEW_LINE;
     
     do {
         $fieldOneComp = getField();
@@ -477,7 +477,14 @@ sub valComp{
         }
     } while ($fieldOneLocation != $fieldTwoLocation);
     clearScreen();
-
+    if (substr($fieldOneComp, 0, 1) eq "D")
+    {
+        $fieldOfComp = "Death";
+    }
+    elsif (substr($fieldOneComp, 0, 1) eq "B")
+    {
+        $fieldOfComp = "Birth";
+    }
     print "Are you looking for [M]ost or [L]east?".$NEW_LINE;
     do {
         $maxFlag = lc(readInput());
@@ -491,31 +498,12 @@ sub valComp{
 
 
 
-    print "Please select the field for the last block [All fields are in the user manual]".$NEW_LINE;
-    if ($maxFlag eq "m"){
-        print "[".$fieldOneComp."]"." or [".$fieldTwoComp."] has most occurences in [GENERAL FIELD] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
-    }
-    else
-    {
-        print "[".$fieldOneComp."]"." or [".$fieldTwoComp."] has most occurences in [GENERAL FIELD] from ".$years[0]."-".$years[1].$NEW_LINE.$NEW_LINE;
-    }
-    do {
-        $fieldOfComp = getField();
-        if  (($fieldOfComp ne "Death")&&($fieldOfComp ne "Birth")){
-            print $INVALID_FIELD." User either Death or Birth".$NEW_LINE;
-        }
-    }while (($fieldOfComp ne "Death")&&($fieldOfComp ne "Birth"));
-
-
-    clearScreen();
-
-
     while ($currentYear <= $years[1]) {
         if ($fieldOfComp eq "Death") {
-            $fileName = "Data/Death/".$currentYear."/deaths".$currentYear.".txt";
+            $fileName = "Data/Death/deaths".$currentYear.".txt";
         }
         else {
-            $fileName = "Data/Birth/".$currentYear."/births".$currentYear.".txt"; 
+            $fileName = "Data/Birth/births".$currentYear.".txt"; 
         }
         open my $file_fh, '<', $fileName
             or die "Unable to open names file: $fileName\n";
@@ -586,12 +574,11 @@ sub valComp{
         }
     }
     print $fieldOneComp.": ".$fieldOneTotalValue." ".$fieldTwoComp.": ".$fieldTwoTotalValue.$NEW_LINE;
-    open (my $fh, '>', 'grapher/comp.txt');
+    open (my $fh, '>', "grapher/comp.txt");
     print $fh "\"fieldComp\",\"fieldTotalValue\"\n";
     print $fh $fieldOneComp.",".$fieldOneTotalValue."\n".$fieldTwoComp.",".$fieldTwoTotalValue;
     close $fh;
-
-    system("perl grapher/plotter.pl grapher/comp.txt grapher/output.pdf");
+    system("perl grapher/plotter.pl grapher/comp.txt grapher/".$fieldOneComp."_vs_".$fieldTwoComp.".output.pdf");
     print "Press enter to see the graph".$NEW_LINE;
     waitForKey();
     system("gnome-open grapher/output.pdf");
@@ -1089,13 +1076,15 @@ sub valGet{
     my $total = 0;
     my $continue = 0;
     my $valid = 0;
+    my $temp;
 
     my $userInput;
 
-    #clearScreen();
+    clearScreen();
 
     print "Please select the field(s)[All fields are in user manual]".$NEW_LINE;
-    print "The # of [Field One] with [Field Two] with... (no limit to # of fields)".$NEW_LINE.$NEW_LINE;
+    print "The # of [Field One] with [Field Two] with... (no limit to # of fields)".$NEW_LINE;
+    print "Can not use Fields of different type (ie: birth with deaths)".$NEW_LINE.$NEW_LINE;
     while ($continue == 0) {
         $valid = 0;
         print "Field: ";
@@ -1110,16 +1099,23 @@ sub valGet{
                     print "You've already used ".$userInput.$NEW_LINE.$NEW_LINE;
                     last;
                 }
+                if (substr($userInput, 0,1) ne substr($fields[$k], 0, 1)) {
+                    clearScreen
+                    $valid = 1;
+                    print "Not the same type as initial Field".$NEW_LINE.$NEW_LINE;
+                    last;
+                }
+                
 
             }
 
             if ($valid == 0) {
                 $fields[$fieldCount] = $userInput;
                 $fieldCount++;
-                print "Add new field? (y)es or (n)o.".$NEW_LINE;
+                print "Add new field? (y)es or (n)o: ";
                 $userInput = readInput();
+                print $NEW_LINE;
                 if(lc($userInput) eq "n") {
-                    print "Triggered".$NEW_LINE;
                     $continue = 1;
                 }
             }   
@@ -1136,7 +1132,7 @@ sub valGet{
         $total += openFile($years[0]+$i, @fields, $fieldCount);
     }
 
-    #clearScreen();
+    clearScreen();
 
     print "The number of ".$fields[0];
 
@@ -1159,11 +1155,19 @@ sub openFile{
     my $record_count = 0;
     my $total = 0;
     my $value = "";
-    my $element = "";\
+    my $element = "";
+    my $count = 0;
+    my $fileName;
 
-    my $year_fh;
-    my $type;
-    my $fileName = "Data/".$type."/".lc($type).$year.".txt";
+    if (substr($fields[0], 0, 1) eq "D") {
+        $fileName = "Data/Death/deaths".$year.".txt";
+    }
+
+    else {
+        $fileName = "Data/Birth/birth".$year.".txt";
+    }
+
+    
 
     open my $year_fh, '<', $fileName
        or die "Unable to open file\n";
@@ -1177,12 +1181,12 @@ sub openFile{
        if ( $csv->parse($year_record) ) {
           my @master_fields = $csv->fields();
           $record_count++;
+          $count = 0;
 
-            for my $i ( 0..$fieldCount-1 ){
+            for my $i ( 0..$fieldCount - 1 ){
 
                 $element = getFieldValue($fields[$i]);
                 $value = $master_fields[getFieldLocation($fields[$i])];
-                print $element.$NEW_LINE;
 
                 if ($value eq "M") {
                     $value = "1";
@@ -1192,14 +1196,20 @@ sub openFile{
                 }
 
                 if ($value eq $element) { #### get this resolved
-                    $total++;
+                    $count++;
                 }
+            }
+
+            if ($count == $fieldCount) {
+                $total++;
             }
        }
 
        else {
           warn "Line/record could not be parsed\n";
        }
+
+       clearScreen();
 
     }
 
