@@ -249,6 +249,11 @@ sub valMaxMin{
     my $j;
 
 
+    my $len = 0;
+    my @unique;
+    my @uCounter;
+
+
     $years[0] = $_[0];
     $years[1] = $_[1];
 
@@ -318,11 +323,28 @@ sub valMaxMin{
 
         clearScreen();
         $record_count = 0;
+
+        my $actuallyUnique = $TRUE;
         foreach my $file_record ( @records ) {
             if ($csv -> parse($file_record)){
                 my @master_fields = $csv->fields();
                 $record_count++;
                 $valList[$xYear][$record_count] = $master_fields[$statLoc];
+                # 
+                $actuallyUnique = $TRUE;
+                foreach my $temp (@unique){
+                    if($temp == $master_fields[$statLoc]){
+                        $actuallyUnique = $FALSE;
+                    }
+                }
+                if($actuallyUnique == $TRUE){
+                    $unique[$len] = $master_fields[$statLoc];
+                    print $unique[$len].$NEW_LINE;
+                    $len++;
+                    
+
+                }
+
             } else {
                 warn "Line could not be prepared";
             }
@@ -332,36 +354,36 @@ sub valMaxMin{
         $currentYear++;
         $xYear++;
     }
-    my $len = 0;
-    my @unique;
 
-    my @unique;
-    $unique[len][0] = valList[0][0];
+    # my @unique;
+    # $unique[len][0] = valList[0][0];
 
-    for my $x (0..$xYear){
-        for my $y (0..$record_count){
-            foreach my $temp (@unique){
-                if ($valList[$x][$y] != $temp){
-                    len++;
-                    $unique[len] = $temp;
-                }
-            }
-        }
-    }
+    # for my $x (0..$xYear){
+    #     for my $y (0..$record_count){
+    #             if ($valList[$x][$y] != $temp){
+    #             }
+    #         }
+    #     }
+    # }
 
-    for my $x (0..$xYear){
-        for my $y (0..$record_count){
-            if ($valList[$x][$y] == $unique[]){
+    # for my $x (0..$xYear){
+    #     for my $y (0..$record_count){
+    #         if ($valList[$x][$y] == $unique[]){
 
-            }
-        }
-    }
+    #         }
+    #     }
+    # }
 
-
+    waitForKey();
     # 
     #todo
     return;
 
+}
+
+sub waitForKey{
+    <STDIN>;
+    return;
 }
 
 sub valComp{
@@ -1038,7 +1060,7 @@ sub readInput{
     chomp($input);
     if(lc($input) eq "quit"){
         print $QUITTING_PROMPT.$SPACE.$ENTER_CONTINUE.$NEW_LINE;
-        <STDIN>;
+        waitForKey();
         system("clear");
         exit();
     }
