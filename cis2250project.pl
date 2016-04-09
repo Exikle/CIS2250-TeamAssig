@@ -61,6 +61,13 @@ main();
 # Subroutines
 #
 
+
+
+#main
+#This is the shell of the program that calls all the other subroutines, we decided to do this to make working in a gorup easier, and to make it easier to read
+#IN:
+#OUT:
+#ERROR:
 sub main{
     my @years;
     
@@ -77,12 +84,23 @@ sub main{
     return;
 }
 
+#manualReminder
+#This subroutine reminds the user to read the manual
+#IN:
+#OUT:
+#ERROR:
 sub manualReminder{
     print "Don't forget to take a look at the manual to get the fields required! ".$ENTER_CONTINUE.$NEW_LINE;
     <STDIN>;
     return;
 }
 
+
+#startUserChoices
+#this subroutine asks the user which template they want to use and execute the subroutine
+#IN:
+#OUT:
+#ERROR:
 sub startUserChoices {
     my @years;
     $years[0] = $_[0];
@@ -123,9 +141,15 @@ sub startUserChoices {
         }
     }while($validChoice == $FALSE);
 
-    return($choice);
+    return();
 }
 
+
+#printOptions
+#This subroutine prints out all the possible templates
+#IN:
+#OUT:
+#ERROR:
 sub printOptions{
     print "1. Value Max/Min [Least/Most] [deaths or [field specific]] in [field specific] between [period]".$NEW_LINE;
     print "2. Value Compare[field specific] or [field specific] has [least/most] occurences in [field specific] in [period]".$NEW_LINE;
@@ -135,6 +159,11 @@ sub printOptions{
     return;
 }
 
+#getYearRange
+#This subroutine gets the range of years that the user would like to use
+#IN:
+#OUT: @years: an array containing the starting and ending year
+#ERROR:
 sub getYearRange{
     my $RANGE_PROMPT = "Choose the range of years you would like to examine (Min: 1994 - Max: 2014).\n";
     my $YEAR_START_PROMPT = "Starting year: ";
@@ -174,6 +203,13 @@ sub getYearRange{
     return (@years);
 }
 
+
+#isNotAlpha
+#This subroutine checks to see if the input is a number
+#IN: a value to be cheked to see if it is a number
+#OUT: $True: if the value is a number
+#     $False: if it is not a number
+#ERROR:
 sub isNotAlpha{
     if ($_[0] =~ /^[0-9,.E]+$/){
         return  $TRUE;
@@ -183,6 +219,12 @@ sub isNotAlpha{
     }
 }
 
+#validateStartYear
+#This subroutine checks to see if the year is a valid starting year
+#IN: $year: the year to be validated
+#OUT:   $TRUE : if it is a valid year
+#       $FALSE: if it s not a valid year
+#ERROR:
 sub validateStartYear{
     my $year = $_[0];
 
@@ -200,6 +242,13 @@ sub validateStartYear{
     }
 }
 
+
+#validateEndYear
+#This subroutine checks to see if a year is a valid end year
+#IN:    $year: the year to be checked
+#OUT:   $TRUE : If the year is valid
+#       $FALSE: If it is not Valid
+#ERROR:
 sub validateEndYear{
     my $year = $_[0];
 
@@ -217,6 +266,11 @@ sub validateEndYear{
     }
 }
 
+#clearScreen
+#Clears the screen and prints the header
+#IN:
+#OUT:
+#ERROR:
 sub clearScreen{
     system("clear");
     print $HEADER;
@@ -224,9 +278,9 @@ sub clearScreen{
 }
 
 
-
+#valMaxMin (todo by Dickson)
 # Value Max/Min [Least/Most] [deaths or [field specific]] in [field] between [period]
-
+#
 # bar graph
 sub valMaxMin{
     my @years;    
@@ -421,11 +475,21 @@ sub valMaxMin{
 
 }
 
+#waitForKey
+#This function is waits for the user to input anything
+#IN:
+#OUT:
+#ERROR:
 sub waitForKey{
     <STDIN>;
     return;
 }
 
+#valComp (Completed by Alejandro)
+#This subroutine compares 2 specific field values and presents them in a graph
+#IN:    @years: The starting and ending year
+#OUT:   
+#ERROR:  
 sub valComp{
     my $continue = $FALSE;
     my @years;
@@ -584,7 +648,11 @@ sub valComp{
     system("open grapher/output.pdf");
     return;
 }
-
+#verifyRace
+#this function checks if the field is a race
+#IN:    $race: the field to be checked
+#OUT:   1 for yes, 0 for No
+#ERROR:
 sub verifyRace{
     my $race = $_[0];
     switch($race)
@@ -615,6 +683,11 @@ sub verifyRace{
     return(0);
 }
 
+#convertRace
+#This subroutine refactores the race input to something usable
+#IN:    $race: The race to be changed
+#OUT:   $newRace: The new Race
+#ERROR:
 sub convertRace{
     my $race = $_[0];
     my $newRace;
@@ -622,6 +695,12 @@ sub convertRace{
     return($newRace);
 }
 
+
+#getFieldLocation
+#This gets the location of a field in the csv
+#IN:    $field
+#OUT:
+#ERROR:
 sub getFieldLocation {
     my $field = $_[0];
     switch($field) {
@@ -773,6 +852,12 @@ sub getFieldLocation {
     }
 }
 
+
+#getFieldValue
+#gets the value that a field must equal to be found
+#IN:    $field: the field that need a value
+#OUT:   The value needed
+#ERROR:
 sub getFieldValue {
     my $field = $_[0];
     switch($field) {
@@ -893,6 +978,13 @@ sub getFieldValue {
     return(-1);
 }
 
+
+#validateField
+#CHecks if the field given exists
+#IN:    $field
+#OUT:   $TRUE : if it exists
+#       $FALSE: if it doesn't
+#ERROR:
 sub validateField {
     my $field = $_[0];
     switch ($field) {
@@ -1047,6 +1139,11 @@ sub validateField {
     return $FALSE;
 }
 
+#getField
+#GEts a field from the user and makes sure it exists
+#IN:
+#OUT:   $field: the field retrieved
+#ERROR:
 sub getField{
     my $continue = $FALSE;
     my $field;
@@ -1063,6 +1160,7 @@ sub getField{
     return($field);
 }
 
+#valGet (to do by Henry)
 sub valGet{
     my @years;
 
@@ -1227,6 +1325,12 @@ sub openFile{
 #     return 
 # }
 
+
+#quitProgram
+#executes the end of the program
+#IN:
+#OUT:
+#ERROR:
 sub quitProgram{
         print $QUITTING_PROMPT.$SPACE.$ENTER_CONTINUE.$NEW_LINE;
         waitForKey();
@@ -1234,6 +1338,12 @@ sub quitProgram{
         exit();
 }
 
+
+#readInput
+#gets input from the user and chomps it, will also quit if the user wants it to
+#IN:
+#OUT:   $input: The input from the user
+#ERROR:
 sub readInput{
     my $input = <STDIN>;
     chomp($input);
